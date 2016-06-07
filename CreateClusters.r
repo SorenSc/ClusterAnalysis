@@ -25,12 +25,15 @@ create_cluster = function(number_of_clusters){
                              random_numbers[4],
                              sum(random_numbers[3],random_numbers[4])),2)
 
+    # Combine the matrixes
     data = rbind(rmvnorm(number_of_points,
                          mean_of_data,
                          sigma_of_data),
                  rmvnorm(number_of_points,
                    mean_of_data,
                    sigma_of_data))
+    
+    
 
   }
   return(data)
