@@ -106,7 +106,7 @@ data = as.data.frame(data)
 ##########################################################################################################
 
 ##########################################################################################################
-# (a) FÃ¼gen Sie die Daten in einer Datenmatrix zusammen (vgl. Hausarbeit.r).
+# (a) Fügen Sie die Daten in einer Datenmatrix zusammen (vgl. Hausarbeit.r).
 
 # Already done during creation of the data
 
@@ -136,6 +136,7 @@ summary(data)
 # Max.   : 16.772   Max.   :11.248   Max.   :4.000 
 
 # Plot all data points together
+par(mfrow=c(1,1))
 plot(data[,c("x","y")],
      col = data[,"cluster_index"],
      main = "Random-based dataset")
@@ -146,16 +147,39 @@ if(FALSE == is.null(plot_vector)){
   par(mfrow=plot_vector)
 }
 
+# Scatterplots
 # Plot each cluster seperately and print number of data entries
 # within cluster.
-for(i in number_of_clusters){
+for(i in 1:number_of_clusters){
   plot(x = data$x[data$cluster_index == i],
        y = data$y[data$cluster_index == i],
        col = i,
-       main = "Random-based dataset")
+       main = paste("Random-based dataset of cluster",i),
+       xlab = "x",
+       ylab = "y")
+  
+  # Get number of points for each cluster
+  n = sum(data$cluster_index == i)
+  
+  
+  
+  # Draw legend to graph
+  legend("topright",
+         paste("n =",n),
+         bty ='n'
+  )
   
 }
 
+# Boxplots
+for(i in 1:number_of_clusters){
+  
+}
+
+# Histogram
+
+# Correlation
+# Covarianz
 
 
 
