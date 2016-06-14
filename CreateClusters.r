@@ -147,21 +147,20 @@ if(FALSE == is.null(plot_vector)){
   par(mfrow=plot_vector)
 }
 
-# Scatterplots
+# Scatterplots combined with boxplots
+# Idea's origin: http://statmethods.net/advgraphs/layout.html 
 # Plot each cluster seperately and print number of data entries
 # within cluster.
 for(i in 1:number_of_clusters){
   plot(x = data$x[data$cluster_index == i],
        y = data$y[data$cluster_index == i],
        col = i,
-       main = paste("Random-based dataset of cluster",i),
+       main = paste("Zufallsbasierte Datenpunkte von Cluster",i),
        xlab = "x",
        ylab = "y")
   
   # Get number of points for each cluster
   n = sum(data$cluster_index == i)
-  
-  
   
   # Draw legend to graph
   legend("topright",
@@ -172,15 +171,33 @@ for(i in 1:number_of_clusters){
 }
 
 # Boxplots
+par(mfrow = c(number_of_clusters,1))
+datax = matrix
 for(i in 1:number_of_clusters){
   
+  x = data$x[data$cluster_index == i]
+  
+  n = max(datax)
+  
+  cbind(datax,x)
+  
 }
+
+x <- 1:2
+y <- 1:10
+n <- max(length(x), length(y))
+length(x) <- n                      
+length(y) <- n
+cbind(x,y)
+
+boxplot(x~y)
 
 # Histogram
 
 # Correlation
 # Covarianz
 
+# Dendogram
 
 
 
