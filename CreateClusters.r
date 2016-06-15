@@ -12,16 +12,18 @@ library(mvtnorm)
 create_clusters = function(number_of_clusters){
   
   data = matrix(0,0,3)
-
+  
   for(i in 1:number_of_clusters){
     
-    random_numbers = round(runif(4,0,10))
+    # If the range of random_numbers is chosen larger the possibility 
+    # of more different clusters is higher
+    random_numbers = round(runif(4,0,100))
     number_of_points = round(runif(1,10,200))
     
     index = matrix(i,number_of_points,1)
     
     new_cluster = cbind(create_single_cluster(random_numbers, number_of_points),
-                 index)
+                        index)
     
     # Combine the different matrixes to a data matrix
     data = rbind(data, new_cluster)
@@ -83,6 +85,34 @@ plot_order = function(number_of_clusters){
   }
 }
 
+# Gives back the x and y variables seperated for a given matrix
+# - data
+getxydata = function(data){
+  
+  nx = 0
+  
+  for(i in 1:number_of_clusters){
+    nx = max(nx, length(data$x[data$cluster_index == i]))
+  }
+  
+  datax = matrix(0,nx,0)
+  datay = matrix(0,nx,0)
+  
+  for(i in 1:number_of_clusters){
+    
+    current_x_vector = data$x[data$cluster_index == i]
+    current_y_vector = data$y[data$cluster_index == i]
+    
+    length(current_x_vector) = nx
+    length(current_y_vector) = nx
+    
+    datax = cbind(datax, current_x_vector)
+    datay = cbind(datay, current_y_vector)
+  }
+  
+  return(list(datax, datay))
+}
+
 ##########################################################################################################
 # Generieren der Daten:
 ##########################################################################################################
@@ -106,7 +136,7 @@ data = as.data.frame(data)
 ##########################################################################################################
 
 ##########################################################################################################
-# (a) Fügen Sie die Daten in einer Datenmatrix zusammen (vgl. Hausarbeit.r).
+# (a) F?gen Sie die Daten in einer Datenmatrix zusammen (vgl. Hausarbeit.r).
 
 # Already done during creation of the data
 
@@ -139,7 +169,7 @@ summary(data)
 par(mfrow=c(1,1))
 plot(data[,c("x","y")],
      col = data[,"cluster_index"],
-     main = "Random-based dataset")
+     main = "Zufallsbasierter Datensatz")
 
 # Set par(mfrow=...) parameter correct
 plot_order(number_of_clusters) -> plot_vector
@@ -171,26 +201,14 @@ for(i in 1:number_of_clusters){
 }
 
 # Boxplots
-par(mfrow = c(number_of_clusters,1))
-datax = matrix
-for(i in 1:number_of_clusters){
-  
-  x = data$x[data$cluster_index == i]
-  
-  n = max(datax)
-  
-  cbind(datax,x)
-  
-}
+xy_of_data = getxydata(data)
 
-x <- 1:2
-y <- 1:10
-n <- max(length(x), length(y))
-length(x) <- n                      
-length(y) <- n
-cbind(x,y)
+boxplot(xy_of_data[[1]], horizontal = TRUE)
+boxplot(xy_of_data[[2]])
 
-boxplot(x~y)
+
+par(mfrow = c(1,1))
+
 
 # Histogram
 
@@ -199,6 +217,8 @@ boxplot(x~y)
 
 # Dendogram
 
+
+# eventuell weiter auseinander liegende Daten generieren lassen
 
 
 # Streudiagramme
