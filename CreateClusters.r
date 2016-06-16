@@ -85,14 +85,32 @@ plot_order = function(number_of_clusters){
   }
 }
 
+# Returns information useful for a legend 
+# - xdata
+# - ydata
+getLegendInformation = function(xdata, ydata){
+  
+  n = length(xdata)
+  co = round(cor(xdata, ydata), 4)
+  cv = round(cov(xdata, ydata), 4)
+  
+  leg = c(paste("n =",n),
+          paste("cor =",co),
+          paste("cov =", cv))
+  
+  return(leg)
+}
+
 # Gives back the x and y variables seperated for a given matrix
 # - data
 getxydata = function(data){
   
-  nx = 0
+  nx = length(data$x)
+  name_vector = NULL
   
   for(i in 1:number_of_clusters){
-    nx = max(nx, length(data$x[data$cluster_index == i]))
+    # nx = max(nx, length(data$x[data$cluster_index == i]))
+    name_vector = c(name_vector, paste("Cluster",i))
   }
   
   datax = matrix(0,nx,0)
@@ -109,6 +127,8 @@ getxydata = function(data){
     datax = cbind(datax, current_x_vector)
     datay = cbind(datay, current_y_vector)
   }
+  
+  colnames(datax) = colnames(datay) = name_vector
   
   return(list(datax, datay))
 }
@@ -168,8 +188,18 @@ summary(data)
 # Plot all data points together
 par(mfrow=c(1,1))
 plot(data[,c("x","y")],
-     col = data[,"cluster_index"],
-     main = "Zufallsbasierter Datensatz")
+     col = data[,"cluster_index"]+1,
+     main = "Zufallsbasierter Datensatz von zwei Variablen")
+
+# Get information contained in the legend 
+# of the plot
+leg = getLegendInformation(data$x,
+                           data$y)
+
+# Draw legend to graph
+legend("topleft",
+       leg,
+       bty ='n')
 
 # Set par(mfrow=...) parameter correct
 plot_order(number_of_clusters) -> plot_vector
@@ -184,35 +214,50 @@ if(FALSE == is.null(plot_vector)){
 for(i in 1:number_of_clusters){
   plot(x = data$x[data$cluster_index == i],
        y = data$y[data$cluster_index == i],
-       col = i,
+       col = i+1,
        main = paste("Zufallsbasierte Datenpunkte von Cluster",i),
        xlab = "x",
        ylab = "y")
   
   # Get number of points for each cluster
-  n = sum(data$cluster_index == i)
+  leg = getLegendInformation(data$x[data$cluster_index == i],
+                             data$y[data$cluster_index == i])
   
   # Draw legend to graph
-  legend("topright",
-         paste("n =",n),
-         bty ='n'
-  )
+  legend("topleft",
+         leg,
+         bty ='n')
   
 }
 
 # Boxplots
 xy_of_data = getxydata(data)
 
-boxplot(xy_of_data[[1]], horizontal = TRUE)
-boxplot(xy_of_data[[2]])
-
-
 par(mfrow = c(1,1))
+
+title_of_boxplots = "Boxplots der Variable"
+
+# Draw boxplot of the x variable
+x = cbind(data$x,xy_of_data[[1]])
+colnames(x) = c("Gesamt", colnames(xy_of_data[[1]]))
+col_vec = c(1:(number_of_clusters+1))
+boxplot(x, 
+        horizontal = TRUE,
+        main = paste(title_of_boxplots,"x"),
+        border = col_vec)
+
+# Draw boxplot of the y variable
+y = cbind(data$y,xy_of_data[[2]])
+colnames(y) = c("Gesamt", colnames(xy_of_data[[2]]))
+col_vec = c(1:(number_of_clusters+1))
+boxplot(y,
+        main = paste(title_of_boxplots,"y"),
+        border = col_vec)
 
 
 # Histogram
 
-# Correlation
+
 # Covarianz
 
 # Dendogram
