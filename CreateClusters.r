@@ -256,7 +256,7 @@ boxplot(y,
 
 
 # Histogram
-
+# Startung to ...
 
 # Covarianz
 
