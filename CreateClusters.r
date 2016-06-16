@@ -133,6 +133,29 @@ getxydata = function(data){
   return(list(datax, datay))
 }
 
+# Draws a histogram and its density function.
+# - data matrix
+# - spec_data to be plotted
+# - binwidth to change width of the bars
+# - xlab
+# - ylab
+# - main
+draw_histogram = function(data, spec_data, binwidth, xlab, ylab, main){
+  
+  plot = ggplot(data, aes(x = spec_data)) + 
+    geom_histogram(aes(y = ..density..), 
+                   binwidth = binwidth,
+                   colour = 1,
+                   fill = "white") + 
+    geom_density() +
+    xlab(xlab) +
+    ylab(ylab) + 
+    ggtitle(main)
+  
+  return(plot)
+}
+
+
 ##########################################################################################################
 # Generieren der Daten:
 ##########################################################################################################
@@ -255,22 +278,24 @@ boxplot(y,
         border = col_vec)
 
 
-# Histogram
-# Startung to ...
+# Histogram of all x - data
+library(ggplot2)
+par(mfrow = c(1,1))
 
-# Covarianz
+draw_histogram(data, data$x, 5 ,"X-Werte", "Dichte", "Verteilung der x-Werte")
+draw_histogram(data, data$y, 5 ,"Y-Werte", "Dichte", "Verteilung der y-Werte")
+
+par(mfrow = plot_order(number_of_clusters))
+
+for(i in 1:number_of_clusters){
+  draw_histogram(xy_of_data[[1]][,i], xy_of_data[[1]][,i], 5 ,"X-Werte", "Dichte", "Verteilung der x-Werte")
+}
 
 # Dendogram
 
-
-# eventuell weiter auseinander liegende Daten generieren lassen
-
-
-# Streudiagramme
-# Histogramm
-# Boxplots
-
-# Display n
+# TODO
+# How to set the binwidth?
+# Make names of the functions consistent
 
 ##########################################################################################################
 # Vergleich von Cluster-Verfahren
