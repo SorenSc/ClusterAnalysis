@@ -342,10 +342,44 @@ for(i in 1:number_of_clusters){
 par(mfrow=c(1,1))
 cluster_data = cbind(data$x, data$y)
 
+# Heatmap
 dist(cluster_data) -> cluster_data
 
-cluster_wardD = hclust(cluster_data, method = "ward.D")
-cluster_wardD2 = hclust(cluster_data, method = "ward.D2")
+heatmap(as.matrix(cluster_data), 
+        Rowv=NA,
+        Colv=NA,
+        # col = cm.colors(256), 
+        scale="column", 
+        margins=c(1,1))
+
+# Uses the complete method by default
+heatmap(as.matrix(cluster_data), 
+        scale="column", 
+        margins=c(1,1))
+
+cluster_wardD = hclust(cluster_data, 
+                       method = "ward.D")
+plot(cluster_wardD, 
+     labels = rep.int("o", length(data$x)),
+     main = "wardD",
+     xlab = "Datenpunkte",
+     ylab = "Höhe")
+
+source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
+# colored dendrogram
+op = par(bg = "gray25")
+cols = hsv(c(0.2, 0.4, 0.65, 0.95), 1, 1, 0.8)
+A2Rplot(cluster_wardD, 
+        k = 4, 
+        boxes = FALSE, 
+        col.up = "gray50", 
+        col.down = cols,
+        labels = rep.int("o", length(data$x)),
+        main = "Dendogram")
+
+plot(cz <- hclust(dm, method = "centroid"))
+plot(hclust(cluster_data, method = "ward.D2"), main = "wardD2")
+abline(h = 100, col = "lightgrey", lty = 3)
 cluster_single = hclust(cluster_data, method = "single")
 cluster_complete = hclust(cluster_data, method = "complete")
 cluster_average = hclust(cluster_data, method = "average")
@@ -353,7 +387,6 @@ cluster_mcquitty = hclust(cluster_data, method = "mcquitty")
 cluster_median = hclust(cluster_data, method = "median")
 cluster_centroid = hclust(cluster_data, method = "centroid")
 
-plot(cluster_wardD, main = "wardD")
 plot(cluster_wardD2, main = "wardD2")
 plot(cluster_single, main = "single")
 plot(cluster_complete, main = "complete")
