@@ -18,7 +18,7 @@ create_clusters = function(number_of_clusters){
     # If the range of random_numbers is chosen larger the possibility 
     # of more different clusters is higher
     random_numbers = round(runif(4,0,100))
-    number_of_points = round(runif(1,10,200))
+    number_of_points = round(runif(1,10,20))
     
     index = matrix(i,number_of_points,1)
     
@@ -169,8 +169,41 @@ draw_histogram = function(ggplot, data, spec_data, binwidth, xlab, ylab, main, c
   return(plot)
 }
 
+# Resets the parameters of par to it's default
+resetPar <- function() {
+  dev.new()
+  op <- par(no.readonly = TRUE)
+  dev.off()
+  op
+}
 
+# Returns the index of the last element which fits a condition
+# - data
+max_index_of_vector = function(data){
+  borders = c()
+  for(i in 2:number_of_clusters){
+    borders = c(borders,match(i,data$cluster_index)-1)
+  }  
+  max(borders, na.rm=TRUE)
+  return(borders)
+}
 
+# Draws a heatmap with the given options
+# - cluster_data
+# - rowv            # row dendogram
+# - clov            # column dendogram
+# - borders         # draw borders of clusters into the plot
+# - main            # title of the plot
+draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, main){
+  heatmap(as.matrix(cluster_data), 
+          Rowv=rowv,
+          Colv=colv,
+          col = cm.colors(256),
+          scale="column", 
+          margins=c(1,1),
+          main = main,
+          add.expr = abline(h = borders, v = borders, lwd = 1))
+}
 
 ##########################################################################################################
 # Generieren der Daten:
@@ -303,6 +336,7 @@ draw_histogram("ggplot", data, data$y, 5 ,"Y-Werte", "Dichte", "Verteilung der y
 
 par(mfrow = plot_order(number_of_clusters))
 
+# Be aware of the fact that the scales are different
 for(i in 1:number_of_clusters){
   draw_histogram("", 
                  structure(xy_of_data), 
@@ -344,18 +378,13 @@ cluster_data = cbind(data$x, data$y)
 
 # Heatmap
 dist(cluster_data) -> cluster_data
+borders = max_index_of_vector(data)
 
-heatmap(as.matrix(cluster_data), 
-        Rowv=NA,
-        Colv=NA,
-        # col = cm.colors(256), 
-        scale="column", 
-        margins=c(1,1))
+draw_heatmap(cluster_data, NA, NA, main = "Heatmap of all clusters")
+draw_heatmap(cluster_data, NA, NA, borders, main = "Heatmap with real borders")
+# Mention reordering of data
+draw_heatmap(cluster_data, main = "Heatmap with dendograms")
 
-# Uses the complete method by default
-heatmap(as.matrix(cluster_data), 
-        scale="column", 
-        margins=c(1,1))
 
 cluster_wardD = hclust(cluster_data, 
                        method = "ward.D")
@@ -377,8 +406,10 @@ A2Rplot(cluster_wardD,
         labels = rep.int("o", length(data$x)),
         main = "Dendogram")
 
-plot(cz <- hclust(dm, method = "centroid"))
-plot(hclust(cluster_data, method = "ward.D2"), main = "wardD2")
+par(resetPar())
+
+# plot(cz <- hclust(dm, method = "centroid"))
+plot(wardD2 <- hclust(cluster_data, method = "ward.D2"), main = "wardD2")
 abline(h = 100, col = "lightgrey", lty = 3)
 cluster_single = hclust(cluster_data, method = "single")
 cluster_complete = hclust(cluster_data, method = "complete")
@@ -394,6 +425,9 @@ plot(cluster_average, main = "average")
 plot(cluster_mcquitty, main = "mcquitty")
 plot(cluster_median, main = "median")
 plot(cluster_centroid, main = "centroid")
+
+
+# usa algorithm to compare different cluster techniques
 
 ##########################################################################################################
 # (b) Vergleichen Sie die Ergebnisse unter Verwendung geeigneter Grafiken. Zur Beurteilung der
