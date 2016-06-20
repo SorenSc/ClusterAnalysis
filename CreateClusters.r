@@ -245,8 +245,13 @@ plot_dendrograms = function(cluster_mechanisms, cluster_analysis_output, labels)
          main = main,
          sub = NA,
          xlab = "Datenpunkte",
+<<<<<<< HEAD
          ylab = "Höhe")
     
+=======
+         ylab = "HÃ¶he")
+
+>>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
     # The height can hardly be specified using an algorithm.
     # Because of that it is not done automatically.
     # abline(h = , 
@@ -317,7 +322,11 @@ scatterplot_hclust_and_data = function(cluster_output, number_of_clusters, data,
   for(i in 1:length(cluster_output)){
     
     cluster_mechanism = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
+<<<<<<< HEAD
     main = paste("Vergleich tatsächlicher und bestimmter Zuordnung für:", cluster_mechanism)
+=======
+    main = paste("Vergleich tatsÃ¤chlicher und bestimmter Zuordnung fÃ¼r:", cluster_mechanism)
+>>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
     
     # Divides data into given number of clusters
     analysed_belonging = cutree(cluster_output[[i]],
@@ -347,6 +356,9 @@ scatterplot_hclust_and_data = function(cluster_output, number_of_clusters, data,
 # (b) Erzeugen Sie sich Daten für Cluster 2 ebenfalls mit Hilfe der Funktion rmvnorm() aber anderen
 # Werten für den Mittelwertsvektor und die Kovarianzmatrix.
 # (c) Erzeugen Sie sich nach Bedarf Daten für weitere Cluster.
+
+# Import statements
+library(mvtnorm)
 
 # Import statements
 library(mvtnorm)
@@ -536,8 +548,13 @@ draw_heatmap(cluster_data_dist, main = "Heatmap with dendrograms")
 
 ##########################################################################################################
 # (a) Betrachten Sie verschiedene Cluster-Verfahren Ihrer Wahl und wenden Sie diese auf die Daten
+<<<<<<< HEAD
 # oben an. Beachten Sie dabei, dass die "wahre" Cluster-Zugehörigkeit hier nicht eingehen darf
 # ("unsupervised learning").
+=======
+# oben an. Beachten Sie dabei, dass die â€œwahreâ€ Cluster-ZugehÃ¶rigkeit hier nicht eingehen darf
+# (â€œunsupervised learningâ€).
+>>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
 par(resetPar())
 
 ##########################################################################################################
@@ -710,6 +727,151 @@ plot(cluster_data,
 # - Cluster data based on the origin dataset to get an appropriate labeling of the data
 
 ##########################################################################################################
+# Dendrograms
+plot_dendrograms(cluster_mechanisms,
+                 hierarchical_cluster_analysis_output,
+                 data$cluster_index)
+
+# TODO
+# - Code is producing an error
+plot_fancy_dendrograms(cluster_mechanisms,
+                       hierarchical_cluster_analysis_output)
+
+par(resetPar())
+
+# Import statements
+library(ape)
+
+par(mfrow = plot_order(length(cluster_mechanisms)))
+
+# Plot round dendrograms
+plot_round_dendrograms(cluster_mechanisms,
+                       hierarchical_cluster_analysis_output)
+
+
+##########################################################################################################
+# Scatterplots
+par(mfrow=plot_order(number_of_clusters))
+scatterplot_hclust_and_data(hierarchical_cluster_analysis_output,
+                            number_of_clusters,
+                            data,
+                            cluster_mechanisms)
+
+
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# K-means clustering
+
+model = kmeans(cluster_data, 
+               centers = number_of_clusters)
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "K-means Clustern",
+     las = 2)
+
+# Display the centers of the cluster
+points(model$centers, 
+       pch=1:number_of_clusters, 
+       cex=2)
+
+
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# Fuzzy C-Means
+
+# Import statements
+library(e1071)
+
+model = cmeans(cluster_data,
+               number_of_clusters,
+               iter.max = 100,
+               m = 2,
+               method = "cmeans")
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "Fuzzy C-Clustern",
+     las = 2)
+
+# Display the centers of the cluster
+points(model$centers, 
+       pch=1:number_of_clusters, 
+       cex=2)
+
+
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# Multi-Gaussian with Expectation-Maximization
+
+# Import statements
+library(mclust)
+
+model = Mclust(cluster_data,
+               number_of_clusters)
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$classification,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "Multi-Gaussian with Expectation-Maximization",
+     las = 2)
+
+
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# Density-based Cluster
+
+# Import statements
+library(fpc)
+
+# The value of eps needs some experimentation. For four clusters with 10 to 20 data points 6 seemed 
+# to be a good value.
+model = dbscan(cluster_data,
+               eps = 6,
+               MinPts = 4)
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "Density-based Cluster",
+     las = 2)
+
+
+# TODO
+# Random Forest for clustering 
+# library(randomForest)
+# 
+# cluster_data.rf = randomForest(cluster_data, prox = TRUE)
+# cluster_data.p = classCenter(data$x, data$y, cluster_data.rf$prox)
+# plot(cluster_data,col= data$cluster_index + 1)
+# points(cluster_data.p)
+# 
+# data(iris)
+# iris.rf <- randomForest(iris[,-5], iris[,5], prox=TRUE)
+# iris.p <- classCenter(iris[,-5], iris[,5], iris.rf$prox)
+# plot(iris[,3], iris[,4], pch=21, xlab=names(iris)[3], ylab=names(iris)[4],
+#      bg=c("red", "blue", "green")[as.numeric(factor(iris$Species))],
+#      main="Iris Data with Prototypes")
+# points(iris.p[,3], iris.p[,4], pch=21, cex=2, bg=c("red", "blue", "green"))
+
+# - Maybe not c for combining the results but cbind or something like append
+# - Cluster data based on the origin dataset to get an appropriate labeling of the data
+
+##########################################################################################################
 # (c) Betrachten Sie nicht nur ein Simulationsszenario; d.h. untersuchen Sie verschiedene Settings,
 # z.B. bzgl. Anzahl Variablen, Beobachtungen, Cluster, sowie Mittelwertsvektoren und Kovarianzmatrizen.
 
@@ -721,7 +883,11 @@ plot(cluster_data,
 # - Varierende Zahl an Clustern
 
 # - Verschiedene Mittelwertsvektoren/Kovarianzmatrizen
+<<<<<<< HEAD
 # Die Matrizen ändern sich aufgrund des Zufallsbasierten Verfahrens automatisch.
+=======
+# Die Matrizen Ã¤ndern sich aufgrund des Zufallsbasierten Verfahrens automatisch.
+>>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
 
 
 
