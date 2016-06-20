@@ -9,7 +9,7 @@ library(mvtnorm)
 # Creates a user-defined number of clusters with 10 to 200 data points for each
 # one.
 # - number_of_clusters
-create_clusters = function(number_of_clusters){
+create_clusters = function(number_of_clusters, rn_start, rn_stop, number_of_point){
   
   data = matrix(0,0,3)
   
@@ -17,8 +17,8 @@ create_clusters = function(number_of_clusters){
     
     # If the range of random_numbers is chosen larger the possibility 
     # of more different clusters is higher
-    random_numbers = round(runif(4,0,100))
-    number_of_points = round(runif(1,10,20))
+    random_numbers = round(runif(4, rn_start, rn_stop))
+    number_of_points = round(runif(1, 10, number_of_point)))
     
     index = matrix(i,number_of_points,1)
     
@@ -28,6 +28,10 @@ create_clusters = function(number_of_clusters){
     # Combine the different matrixes to a data matrix
     data = rbind(data, new_cluster)
   }
+  
+  colnames(data) = c("x","y","cluster_index")
+  
+  data = as.data.frame(data)
   
   return(data)
 }
@@ -218,10 +222,14 @@ draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, 
 
 # Create a predefined number of clusters
 number_of_clusters = 4
-data = create_clusters(number_of_clusters)
-colnames(data) = c("x","y","cluster_index")
+data = create_clusters(number_of_clusters, 
+                       c(0,100),
+                       c(10,20))
 
-data = as.data.frame(data)
+# Mention:
+# - Continous data
+# - Random based data
+# - Do I have to standardize the two variables?
 
 ##########################################################################################################
 # Visualisierung der Daten:
@@ -359,6 +367,20 @@ for(i in 1:number_of_clusters){
                  i+1)
 }
 
+
+
+# Heatmaps
+par(mfrow=c(1,1))
+cluster_data = cbind(data$x, data$y)
+
+dist(cluster_data) -> cluster_data
+borders = max_index_of_vector(data)
+
+draw_heatmap(cluster_data, NA, NA, main = "Heatmap of all clusters")
+draw_heatmap(cluster_data, NA, NA, borders, main = "Heatmap with real borders")
+# Mention reordering of data
+draw_heatmap(cluster_data, main = "Heatmap with dendograms")
+
 # TODO
 # How to set the binwidth?
 # Make names of the functions consistent
@@ -372,66 +394,89 @@ for(i in 1:number_of_clusters){
 # oben an. Beachten Sie dabei, dass die “wahre” Cluster-Zugehörigkeit hier nicht eingehen darf
 # (“unsupervised learning”).
 
-# Dendogram
-par(mfrow=c(1,1))
-cluster_data = cbind(data$x, data$y)
+cluster_mechanisms = c("ward.D",
+                       "ward.D2",
+                       "single",
+                       "complete",
+                       "average",
+                       "mcquitty",
+                       "median",
+                       "centroid")
 
-# Heatmap
-dist(cluster_data) -> cluster_data
-borders = max_index_of_vector(data)
-
-draw_heatmap(cluster_data, NA, NA, main = "Heatmap of all clusters")
-draw_heatmap(cluster_data, NA, NA, borders, main = "Heatmap with real borders")
-# Mention reordering of data
-draw_heatmap(cluster_data, main = "Heatmap with dendograms")
-
-
-cluster_wardD = hclust(cluster_data, 
-                       method = "ward.D")
-plot(cluster_wardD, 
-     labels = rep.int("o", length(data$x)),
-     main = "wardD",
-     xlab = "Datenpunkte",
-     ylab = "Höhe")
-
-source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
-# colored dendrogram
-op = par(bg = "gray25")
-cols = hsv(c(0.2, 0.4, 0.65, 0.95), 1, 1, 0.8)
-A2Rplot(cluster_wardD, 
-        k = 4, 
-        boxes = FALSE, 
-        col.up = "gray50", 
-        col.down = cols,
-        labels = rep.int("o", length(data$x)),
-        main = "Dendogram")
-
-par(resetPar())
-
-# plot(cz <- hclust(dm, method = "centroid"))
-plot(wardD2 <- hclust(cluster_data, method = "ward.D2"), main = "wardD2")
-abline(h = 100, col = "lightgrey", lty = 3)
-cluster_single = hclust(cluster_data, method = "single")
-cluster_complete = hclust(cluster_data, method = "complete")
-cluster_average = hclust(cluster_data, method = "average")
-cluster_mcquitty = hclust(cluster_data, method = "mcquitty")
-cluster_median = hclust(cluster_data, method = "median")
-cluster_centroid = hclust(cluster_data, method = "centroid")
-
-plot(cluster_wardD2, main = "wardD2")
-plot(cluster_single, main = "single")
-plot(cluster_complete, main = "complete")
-plot(cluster_average, main = "average")
-plot(cluster_mcquitty, main = "mcquitty")
-plot(cluster_median, main = "median")
-plot(cluster_centroid, main = "centroid")
+for(i in 1:length(cluster_mechanisms)){
+  
+  main = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
+  
+  hclust_output = hclust(cluster_data, method = cluster_mechanisms[i])
+  
+  plot(hclust_output,
+       hang = -0.1,
+       las = 2,
+       labels = data$cluster_index,
+       main = main,
+       sub = NA,
+       xlab = "Datenpunkte",
+       ylab = "Höhe")
+}
 
 
+# Mention:
+# - No scaling is necessary because variables are created based on the same technique
 # usa algorithm to compare different cluster techniques
+# - Inversions are hard to interpret
 
 ##########################################################################################################
 # (b) Vergleichen Sie die Ergebnisse unter Verwendung geeigneter Grafiken. Zur Beurteilung der
 # Qualität der Cluster-Verfahren können Sie nun wieder die “wahre” Cluster-Zugehörigkeit heranziehen.
+
+# source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
+# # colored dendrogram
+# op = par(bg = "gray25")
+# cols = hsv(c(0.2, 0.4, 0.65, 0.95), 1, 1, 0.8)
+# A2Rplot(cluster_wardD, 
+#         k = 4, 
+#         boxes = FALSE, 
+#         col.up = "gray50", 
+#         col.down = cols,
+#         labels = data$cluster_index,
+#         main = "Dendogram")
+# 
+# par(resetPar())
+
+# plot(cz <- hclust(dm, method = "centroid"))
+
+
+# Round dendogram to get a better overview
+library(ape)
+CL1 <- as.hclust(wardD2)
+CL2 <- as.phylo(CL1)
+plot(CL2, type="fan", cex=0.5)
+
+library(mclust)
+
+# Clustern der pottery Daten
+help(Mclust)
+mc <- Mclust(data)
+summary(mc)
+
+# BIC-Plot
+plot(mc, pots, what = "BIC", col = "black")
+help(mclustModelNames)
+
+model <- kmeans(iris[,1:4], 3)
+# plot with first two attributes: Sepal.Length Sepal.Width 
+plot(iris[,c(1,2)], col=model$cluster, main="K-Means")
+# point center of first two attributes
+points(model$centers[, c(1,2)], col=1:3, pch=8, cex=2)
+
+model <- kmeans(cluster_data, 4)
+plot(model)
+# plot with first two attributes: Sepal.Length Sepal.Width 
+plot(iris[,c(1,2)], col=model$cluster, main="K-Means")
+# point center of first two attributes
+points(model$centers[, c(1,2)], col=1:4, pch=8, cex=2)
+
+# Maybe not c for combining the results but cbind or something like append
 
 ##########################################################################################################
 # (c) Betrachten Sie nicht nur ein Simulationsszenario; d.h. untersuchen Sie verschiedene Settings,
