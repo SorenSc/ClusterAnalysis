@@ -198,8 +198,8 @@ max_index_of_vector = function(data){
 
 # Draws a heatmap with the given options
 # - Cluster_data
-# - Rowv            # Row dendogram
-# - Clov            # Column dendogram
+# - Rowv            # Row dendrogram
+# - Clov            # Column dendrogram
 # - Borders         # Draw borders of clusters into the plot
 # - Main            # Title of the plot
 draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, main){
@@ -253,6 +253,52 @@ plot_dendrograms = function(cluster_mechanisms, cluster_analysis_output, labels)
   }
 }
 
+# Uses the Code from the A2R package to draw dendrograms
+# - Cluster_mechanisms
+# - Cluster_analysis_output
+plot_fancy_dendrograms = function(cluster_meachanism, hierarchical_cluster_analysis_output){
+  
+  source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
+  
+  op = par(bg = "gray25")
+  cols = hsv(c(0.2, 0.4, 0.65, 0.95), 1, 1, 0.8)
+  
+  for(i in 1:length(hierarchical_cluster_analysis_output)){
+    
+    main = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
+    
+    A2Rplot(hierarchical_cluster_analysis_output[[i]],
+            # labels = data$cluster_index,
+            k = 4,
+            boxes = FALSE,
+            col.up = "gray50",
+            col.down = cols,
+            main = main)
+  }
+  
+  par(resetPar())
+}
+
+# Plot round dendograms by using the library ape
+# - Cluster_mechanisms
+# - Cluster_analysis_output
+plot_round_dendrograms = function(cluster_mechanisms, cluster_output){
+  
+  for(i in 1:length(cluster_output)){
+    
+    main = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
+    
+    # Transforming the hclust output to a plottable output
+    CL1 = as.hclust(cluster_output[[i]])
+    CL2 = as.phylo(CL1)
+    
+    plot(CL2, 
+         type="fan", 
+         main = main,
+         cex = 0.5)   # Scalling of text
+    
+  }
+}
 ##########################################################################################################
 # Generieren der Daten:
 ##########################################################################################################
@@ -424,7 +470,7 @@ borders = max_index_of_vector(data)
 draw_heatmap(cluster_data, NA, NA, main = "Heatmap of all clusters")
 draw_heatmap(cluster_data, NA, NA, borders, main = "Heatmap with real borders")
 # Mention reordering of data
-draw_heatmap(cluster_data, main = "Heatmap with dendograms")
+draw_heatmap(cluster_data, main = "Heatmap with dendrograms")
 
 # TODO
 # How to set the binwidth?
@@ -465,35 +511,23 @@ plot_dendrograms(cluster_mechanisms,
                  hierarchical_cluster_analysis_output,
                  data$cluster_index)
 
+# TODO
+# - Code is producing an error
+plot_fancy_dendrograms(cluster_mechanisms,
+                       hierarchical_cluster_analysis_output)
 
-# source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
-# # colored dendrogram
-# op = par(bg = "gray25")
-# cols = hsv(c(0.2, 0.4, 0.65, 0.95), 1, 1, 0.8)
-# A2Rplot(cluster_wardD, 
-#         k = 4, 
-#         boxes = FALSE, 
-#         col.up = "gray50", 
-#         col.down = cols,
-#         labels = data$cluster_index,
-#         main = "Dendogram")
-# 
-# par(resetPar())
+par(resetPar())
 
-# plot(cz <- hclust(dm, method = "centroid"))
-
-
-# Round dendogram to get a better overview
 library(ape)
-CL1 <- as.hclust(wardD2)
-CL2 <- as.phylo(CL1)
-plot(CL2, type="fan", cex=0.5)
+par(mfrow = plot_order(length(cluster_mechanisms)))
+plot_round_dendrograms(cluster_mechanisms,
+                       hierarchical_cluster_analysis_output)
 
 library(mclust)
 
 # Clustern der pottery Daten
 help(Mclust)
-mc <- Mclust(data)
+mc <- Mclust(cluster_data)
 summary(mc)
 
 # BIC-Plot
@@ -513,7 +547,8 @@ plot(iris[,c(1,2)], col=model$cluster, main="K-Means")
 # point center of first two attributes
 points(model$centers[, c(1,2)], col=1:4, pch=8, cex=2)
 
-# Maybe not c for combining the results but cbind or something like append
+# - Maybe not c for combining the results but cbind or something like append
+# - Cluster data based on the origin dataset to get an appropriate labeling of the data
 
 ##########################################################################################################
 # (c) Betrachten Sie nicht nur ein Simulationsszenario; d.h. untersuchen Sie verschiedene Settings,
