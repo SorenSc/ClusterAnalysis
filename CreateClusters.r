@@ -8,7 +8,10 @@ library(mvtnorm)
 
 # Creates a user-defined number of clusters with 10 to 200 data points for each
 # one.
-# - number_of_clusters
+# - Number_of_clusters
+# - Rn_start              # Random number starting value
+# - Rn-stop               # Random number stopping value
+# - Number_of_points      
 create_clusters = function(number_of_clusters, rn_start, rn_stop, number_of_point){
   
   data = matrix(0,0,3)
@@ -18,7 +21,7 @@ create_clusters = function(number_of_clusters, rn_start, rn_stop, number_of_poin
     # If the range of random_numbers is chosen larger the possibility 
     # of more different clusters is higher
     random_numbers = round(runif(4, rn_start, rn_stop))
-    number_of_points = round(runif(1, 10, number_of_point)))
+    number_of_points = round(runif(1, 10, number_of_point))
     
     index = matrix(i,number_of_points,1)
     
@@ -38,13 +41,14 @@ create_clusters = function(number_of_clusters, rn_start, rn_stop, number_of_poin
 
 
 # Creates a single cluster to given
-# - random_numbers
-# - number_of_points
+# - Random_numbers
+# - Number_of_points
 create_single_cluster = function(random_numbers, number_of_points){
   
   data = matrix
   
   mean_of_data = c(random_numbers[1],random_numbers[2])
+  
   # Covariance matrix of has to have a positiv semidefinite quadratic form
   # Matrix fullfills the criteria because Random_numbers is sum of 
   # random_numbers[4] and another random number
@@ -64,7 +68,7 @@ create_single_cluster = function(random_numbers, number_of_points){
 
 
 # Gives back the order of plots in the plot viewer
-# - number_of_clusters
+# - Number_of_clusters
 plot_order = function(number_of_clusters){
   if(number_of_clusters >= 1 && number_of_clusters <=16){
     if(number_of_clusters == 1){
@@ -90,8 +94,8 @@ plot_order = function(number_of_clusters){
 }
 
 # Returns information useful for a legend 
-# - xdata
-# - ydata
+# - Xdata
+# - Ydata
 getLegendInformation = function(xdata, ydata){
   
   n = length(xdata)
@@ -106,7 +110,7 @@ getLegendInformation = function(xdata, ydata){
 }
 
 # Gives back the x and y variables seperated for a given matrix
-# - data
+# - Data
 getxydata = function(data){
   
   nx = length(data$x)
@@ -138,12 +142,12 @@ getxydata = function(data){
 }
 
 # Draws a histogram and its density function.
-# - data matrix
-# - spec_data to be plotted
-# - binwidth to change width of the bars
-# - xlab
-# - ylab
-# - main
+# - Data matrix
+# - Spec_data             # Data to be plotted
+# - Binwidth              # Changes the width of the bars
+# - Xlab
+# - Ylab
+# - Main
 draw_histogram = function(ggplot, data, spec_data, binwidth, xlab, ylab, main, col = 1){
   
   if(ggplot == "ggplot"){
@@ -182,7 +186,7 @@ resetPar <- function() {
 }
 
 # Returns the index of the last element which fits a condition
-# - data
+# - Data
 max_index_of_vector = function(data){
   borders = c()
   for(i in 2:number_of_clusters){
@@ -193,11 +197,11 @@ max_index_of_vector = function(data){
 }
 
 # Draws a heatmap with the given options
-# - cluster_data
-# - rowv            # row dendogram
-# - clov            # column dendogram
-# - borders         # draw borders of clusters into the plot
-# - main            # title of the plot
+# - Cluster_data
+# - Rowv            # Row dendogram
+# - Clov            # Column dendogram
+# - Borders         # Draw borders of clusters into the plot
+# - Main            # Title of the plot
 draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, main){
   heatmap(as.matrix(cluster_data), 
           Rowv=rowv,
@@ -207,6 +211,46 @@ draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, 
           margins=c(1,1),
           main = main,
           add.expr = abline(h = borders, v = borders, lwd = 1))
+}
+
+# Uses the function hclust to perform hierarchical cluster analysis techniques
+# - Cluster_mechanisms          # Names of cluster_mechanisms
+# - Cluster_data                # Data on which analysis is performed on
+perform_hierarchical_cluster_analysis = function(cluster_mechanisms, cluster_data){
+  
+  cluster_output = list()
+  
+  for(i in 1:length(cluster_mechanisms)){
+    
+    main = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
+    
+    cluster_output[[i]] = hclust(cluster_data, method = cluster_mechanisms[i])
+    
+  }
+  
+  return(cluster_output)
+}
+
+# Plots the dendrograms to given data
+# - Cluster_mechanisms
+# - Cluster_analysis_output
+# - Labels
+plot_dendrograms = function(cluster_mechanisms, cluster_analysis_output, labels){
+  
+  for(i in 1:length(cluster_mechanisms)){
+    
+    main = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
+    
+    plot(cluster_analysis_output[[2]],
+         hang = -0.1,
+         las = 2,
+         labels = data$cluster_index,
+         main = main,
+         sub = NA,
+         xlab = "Datenpunkte",
+         ylab = "Höhe")
+    
+  }
 }
 
 ##########################################################################################################
@@ -223,8 +267,9 @@ draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, 
 # Create a predefined number of clusters
 number_of_clusters = 4
 data = create_clusters(number_of_clusters, 
-                       c(0,100),
-                       c(10,20))
+                       0,
+                       100,
+                       20)
 
 # Mention:
 # - Continous data
@@ -393,6 +438,7 @@ draw_heatmap(cluster_data, main = "Heatmap with dendograms")
 # (a) Betrachten Sie verschiedene Cluster-Verfahren Ihrer Wahl und wenden Sie diese auf die Daten
 # oben an. Beachten Sie dabei, dass die “wahre” Cluster-Zugehörigkeit hier nicht eingehen darf
 # (“unsupervised learning”).
+par(resetPar())
 
 cluster_mechanisms = c("ward.D",
                        "ward.D2",
@@ -403,21 +449,7 @@ cluster_mechanisms = c("ward.D",
                        "median",
                        "centroid")
 
-for(i in 1:length(cluster_mechanisms)){
-  
-  main = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
-  
-  hclust_output = hclust(cluster_data, method = cluster_mechanisms[i])
-  
-  plot(hclust_output,
-       hang = -0.1,
-       las = 2,
-       labels = data$cluster_index,
-       main = main,
-       sub = NA,
-       xlab = "Datenpunkte",
-       ylab = "Höhe")
-}
+hierarchical_cluster_analysis_output = perform_hierarchical_cluster_analysis(cluster_mechanisms, cluster_data)
 
 
 # Mention:
@@ -428,6 +460,11 @@ for(i in 1:length(cluster_mechanisms)){
 ##########################################################################################################
 # (b) Vergleichen Sie die Ergebnisse unter Verwendung geeigneter Grafiken. Zur Beurteilung der
 # Qualität der Cluster-Verfahren können Sie nun wieder die “wahre” Cluster-Zugehörigkeit heranziehen.
+
+plot_dendrograms(cluster_mechanisms,
+                 hierarchical_cluster_analysis_output,
+                 data$cluster_index)
+
 
 # source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
 # # colored dendrogram
