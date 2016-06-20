@@ -1,6 +1,3 @@
-library(mvtnorm)
-
-
 ################################################################################
 # Declare functions
 ################################################################################
@@ -241,7 +238,7 @@ plot_dendrograms = function(cluster_mechanisms, cluster_analysis_output, labels)
     
     main = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
     
-    plot(cluster_analysis_output[[2]],
+    plot(cluster_analysis_output[[i]],
          hang = -0.1,
          las = 2,
          labels = data$cluster_index,
@@ -249,6 +246,11 @@ plot_dendrograms = function(cluster_mechanisms, cluster_analysis_output, labels)
          sub = NA,
          xlab = "Datenpunkte",
          ylab = "Höhe")
+
+    # The height can hardly be specified using an algorithm.
+    # Because of that it is not done automatically.
+    # abline(h = , 
+    #        col = "lightgrey")
     
   }
 }
@@ -295,10 +297,46 @@ plot_round_dendrograms = function(cluster_mechanisms, cluster_output){
     plot(CL2, 
          type="fan", 
          main = main,
+         las = 2,
          cex = 0.5)   # Scalling of text
     
   }
 }
+
+# Creates a scatterplot which shows the original belonging of data points to the cluster 
+# and also displays the new assignment by a hierarchical cluster algorithm as specification 
+# of the symbol.
+# - Cluster_output
+# - Number_of_clusters
+# - cluster_mechansims
+scatterplot_hclust_and_data = function(cluster_output, number_of_clusters, data, cluster_mechanisms){
+  
+  xlab = "x-Werte"
+  ylab = "y-Werte"
+  
+  for(i in 1:length(cluster_output)){
+    
+    cluster_mechanism = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
+    main = paste("Vergleich tatsächlicher und bestimmter Zuordnung für:", cluster_mechanism)
+    
+    # Divides data into given number of clusters
+    analysed_belonging = cutree(cluster_output[[i]],
+                                k = number_of_clusters)
+    
+    plot(data$x,
+         data$y,
+         xlab = xlab,
+         ylab = ylab,
+         main = main,
+         las = 2,
+         col = data$cluster_index + 1,
+         pch = analysed_belonging)
+    
+  }
+  
+}
+
+
 ##########################################################################################################
 # Generieren der Daten:
 ##########################################################################################################
@@ -309,6 +347,9 @@ plot_round_dendrograms = function(cluster_mechanisms, cluster_output){
 # (b) Erzeugen Sie sich Daten für Cluster 2 ebenfalls mit Hilfe der Funktion rmvnorm() aber anderen
 # Werten für den Mittelwertsvektor und die Kovarianzmatrix.
 # (c) Erzeugen Sie sich nach Bedarf Daten für weitere Cluster.
+
+# Import statements
+library(mvtnorm)
 
 # Create a predefined number of clusters
 number_of_clusters = 4
@@ -336,6 +377,7 @@ data = create_clusters(number_of_clusters,
 # als auch ohne. Letztere Fall entspricht der Situation, die Sie in der Praxis
 # vorfinden.
 
+##########################################################################################################
 # Inspect the data:
 
 head(data)
@@ -356,11 +398,14 @@ summary(data)
 # 3rd Qu.:  7.525   3rd Qu.: 5.739   3rd Qu.:4.000  
 # Max.   : 16.772   Max.   :11.248   Max.   :4.000 
 
+##########################################################################################################
+# Scatterplot
 # Plot all data points together
 par(mfrow=c(1,1))
 plot(data[,c("x","y")],
      col = data[,"cluster_index"]+1,
-     main = "Zufallsbasierter Datensatz von zwei Variablen")
+     main = "Zufallsbasierter Datensatz von zwei Variablen",
+     las = 2)
 
 # Get information contained in the legend 
 # of the plot
@@ -378,6 +423,7 @@ if(FALSE == is.null(plot_vector)){
   par(mfrow=plot_vector)
 }
 
+# TODO
 # Scatterplots combined with boxplots
 # Idea's origin: http://statmethods.net/advgraphs/layout.html 
 # Plot each cluster seperately and print number of data entries
@@ -388,7 +434,8 @@ for(i in 1:number_of_clusters){
        col = i+1,
        main = paste("Zufallsbasierte Datenpunkte von Cluster",i),
        xlab = "x",
-       ylab = "y")
+       ylab = "y",
+       las = 2)
   
   # Get number of points for each cluster
   leg = getLegendInformation(data$x[data$cluster_index == i],
@@ -401,6 +448,7 @@ for(i in 1:number_of_clusters){
   
 }
 
+##########################################################################################################
 # Boxplots
 xy_of_data = getxydata(data)
 
@@ -426,8 +474,12 @@ boxplot(y,
         border = col_vec)
 
 
+##########################################################################################################
 # Histogram of all x - data
+
+# Import statements
 library(ggplot2)
+
 par(mfrow = c(1,1))
 
 draw_histogram("ggplot", data, data$x, 5 ,"X-Werte", "Dichte", "Verteilung der x-Werte")
@@ -459,18 +511,20 @@ for(i in 1:number_of_clusters){
 }
 
 
-
+##########################################################################################################
 # Heatmaps
 par(mfrow=c(1,1))
-cluster_data = cbind(data$x, data$y)
 
-dist(cluster_data) -> cluster_data
+# Prepare the cluster data
+cluster_data = cbind(data$x, data$y)
+dist(cluster_data) -> cluster_data_dist
+
 borders = max_index_of_vector(data)
 
-draw_heatmap(cluster_data, NA, NA, main = "Heatmap of all clusters")
-draw_heatmap(cluster_data, NA, NA, borders, main = "Heatmap with real borders")
+draw_heatmap(cluster_data_dist, NA, NA, main = "Heatmap of all clusters")
+draw_heatmap(cluster_data_dist, NA, NA, borders, main = "Heatmap with real borders")
 # Mention reordering of data
-draw_heatmap(cluster_data, main = "Heatmap with dendrograms")
+draw_heatmap(cluster_data_dist, main = "Heatmap with dendrograms")
 
 # TODO
 # How to set the binwidth?
@@ -486,6 +540,8 @@ draw_heatmap(cluster_data, main = "Heatmap with dendrograms")
 # (“unsupervised learning”).
 par(resetPar())
 
+##########################################################################################################
+# Hierarchical Clustering
 cluster_mechanisms = c("ward.D",
                        "ward.D2",
                        "single",
@@ -495,7 +551,8 @@ cluster_mechanisms = c("ward.D",
                        "median",
                        "centroid")
 
-hierarchical_cluster_analysis_output = perform_hierarchical_cluster_analysis(cluster_mechanisms, cluster_data)
+hierarchical_cluster_analysis_output = perform_hierarchical_cluster_analysis(cluster_mechanisms, 
+                                                                             cluster_data_dist)
 
 
 # Mention:
@@ -507,6 +564,8 @@ hierarchical_cluster_analysis_output = perform_hierarchical_cluster_analysis(clu
 # (b) Vergleichen Sie die Ergebnisse unter Verwendung geeigneter Grafiken. Zur Beurteilung der
 # Qualität der Cluster-Verfahren können Sie nun wieder die “wahre” Cluster-Zugehörigkeit heranziehen.
 
+##########################################################################################################
+# Dendrograms
 plot_dendrograms(cluster_mechanisms,
                  hierarchical_cluster_analysis_output,
                  data$cluster_index)
@@ -518,34 +577,134 @@ plot_fancy_dendrograms(cluster_mechanisms,
 
 par(resetPar())
 
+# Import statements
 library(ape)
+
 par(mfrow = plot_order(length(cluster_mechanisms)))
+
+# Plot round dendrograms
 plot_round_dendrograms(cluster_mechanisms,
                        hierarchical_cluster_analysis_output)
 
+
+##########################################################################################################
+# Scatterplots
+par(mfrow=plot_order(number_of_clusters))
+scatterplot_hclust_and_data(hierarchical_cluster_analysis_output,
+                            number_of_clusters,
+                            data,
+                            cluster_mechanisms)
+
+
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# K-means clustering
+
+model = kmeans(cluster_data, 
+               centers = number_of_clusters)
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "K-means Clustern",
+     las = 2)
+
+# Display the centers of the cluster
+points(model$centers, 
+       pch=1:number_of_clusters, 
+       cex=2)
+
+
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# Fuzzy C-Means
+
+# Import statements
+library(e1071)
+
+model = cmeans(cluster_data,
+               number_of_clusters,
+               iter.max = 100,
+               m = 2,
+               method = "cmeans")
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "Fuzzy C-Clustern",
+     las = 2)
+
+# Display the centers of the cluster
+points(model$centers, 
+       pch=1:number_of_clusters, 
+       cex=2)
+
+
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# Multi-Gaussian with Expectation-Maximization
+
+# Import statements
 library(mclust)
 
-# Clustern der pottery Daten
-help(Mclust)
-mc <- Mclust(cluster_data)
-summary(mc)
+model = Mclust(cluster_data,
+               number_of_clusters)
 
-# BIC-Plot
-plot(mc, pots, what = "BIC", col = "black")
-help(mclustModelNames)
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$classification,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "Multi-Gaussian with Expectation-Maximization",
+     las = 2)
 
-model <- kmeans(iris[,1:4], 3)
-# plot with first two attributes: Sepal.Length Sepal.Width 
-plot(iris[,c(1,2)], col=model$cluster, main="K-Means")
-# point center of first two attributes
-points(model$centers[, c(1,2)], col=1:3, pch=8, cex=2)
 
-model <- kmeans(cluster_data, 4)
-plot(model)
-# plot with first two attributes: Sepal.Length Sepal.Width 
-plot(iris[,c(1,2)], col=model$cluster, main="K-Means")
-# point center of first two attributes
-points(model$centers[, c(1,2)], col=1:4, pch=8, cex=2)
+##########################################################################################################
+# Thanks to MingXueWang who provided some orientation on:
+# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
+# Density-based Cluster
+
+# Import statements
+library(fpc)
+
+# The value of eps needs some experimentation. For four clusters with 10 to 20 data points 6 seemed 
+# to be a good value.
+model = dbscan(cluster_data,
+               eps = 6,
+               MinPts = 4)
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "Density-based Cluster",
+     las = 2)
+
+
+# TODO
+# Random Forest for clustering 
+# library(randomForest)
+# 
+# cluster_data.rf = randomForest(cluster_data, prox = TRUE)
+# cluster_data.p = classCenter(data$x, data$y, cluster_data.rf$prox)
+# plot(cluster_data,col= data$cluster_index + 1)
+# points(cluster_data.p)
+# 
+# data(iris)
+# iris.rf <- randomForest(iris[,-5], iris[,5], prox=TRUE)
+# iris.p <- classCenter(iris[,-5], iris[,5], iris.rf$prox)
+# plot(iris[,3], iris[,4], pch=21, xlab=names(iris)[3], ylab=names(iris)[4],
+#      bg=c("red", "blue", "green")[as.numeric(factor(iris$Species))],
+#      main="Iris Data with Prototypes")
+# points(iris.p[,3], iris.p[,4], pch=21, cex=2, bg=c("red", "blue", "green"))
 
 # - Maybe not c for combining the results but cbind or something like append
 # - Cluster data based on the origin dataset to get an appropriate labeling of the data
@@ -553,6 +712,18 @@ points(model$centers[, c(1,2)], col=1:4, pch=8, cex=2)
 ##########################################################################################################
 # (c) Betrachten Sie nicht nur ein Simulationsszenario; d.h. untersuchen Sie verschiedene Settings,
 # z.B. bzgl. Anzahl Variablen, Beobachtungen, Cluster, sowie Mittelwertsvektoren und Kovarianzmatrizen.
+
+# Die Anzahl der Variablen zu variieren ist schwierig, da alle Verfahren zur Darstellung und zum Clustern 
+# von Beginn an auf zwei Variablen ausgelegt wurden.
+
+# TODO
+# - Varierende Zahl an Beobachtungen
+# - Varierende Zahl an Clustern
+
+# - Verschiedene Mittelwertsvektoren/Kovarianzmatrizen
+# Die Matrizen ändern sich aufgrund des Zufallsbasierten Verfahrens automatisch.
+
+
 
 ##########################################################################################################
 # (d) Betrachten Sie nach Möglichkeit jeweils nicht nur einen Simulationsdurchlauf sondern führen
