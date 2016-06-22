@@ -752,13 +752,99 @@ plot(cluster_data,
 # Die Anzahl der Variablen zu variieren ist schwierig, da alle Verfahren zur Darstellung und zum Clustern 
 # von Beginn an auf zwei Variablen ausgelegt wurden.
 
-# TODO
-# - Varierende Zahl an Beobachtungen
-# - Varierende Zahl an Clustern
+number_of_clusters = 8
 
-# - Verschiedene Mittelwertsvektoren/Kovarianzmatrizen
-# Die Matrizen ändern sich aufgrund des Zufallsbasierten Verfahrens automatisch.
+data = create_clusters(number_of_clusters, 0, 250, 200)
 
+xy_of_data = getxydata(data)
+
+par(mfrow = c(1,1))
+
+title_of_boxplots = "Boxplots der Variable"
+
+# Draw boxplot of the x variable
+x = cbind(data$x,xy_of_data[[1]])
+colnames(x) = c("Gesamt", colnames(xy_of_data[[1]]))
+col_vec = c(1:(number_of_clusters+1))
+boxplot(x, 
+        horizontal = TRUE,
+        main = paste(title_of_boxplots,"x"),
+        border = col_vec)
+
+# Used cluster_mechanisms
+cluster_mechanisms = c("ward.D2")
+
+# Performs a hierarchically cluster analysis for the eight predefined functions
+hierarchical_cluster_analysis_output = perform_hierarchical_cluster_analysis(cluster_mechanisms, 
+                                                                             cluster_data_dist)
+# Dendrograms
+plot_dendrograms(cluster_mechanisms,
+                 hierarchical_cluster_analysis_output,
+                 data$cluster_index)
+
+# Scatterplot
+par(mfrow=plot_order(number_of_clusters))
+scatterplot_hclust_and_data(hierarchical_cluster_analysis_output,
+                            number_of_clusters,
+                            data,
+                            cluster_mechanisms)
+
+# Fuzzy C-Clustering
+# Import statements
+library(e1071)
+
+model = cmeans(cluster_data,
+               number_of_clusters,
+               iter.max = 100,
+               m = 2,
+               method = "cmeans")
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     # main = "Fuzzy C-Clustern",
+     las = 2)
+
+# Display the centers of the cluster
+points(model$centers, 
+       pch=1:number_of_clusters, 
+       cex=2)
+
+
+# Multi-Gaussian with Expectation-Maximization
+# Import statements
+library(mclust)
+
+model = Mclust(cluster_data,
+               number_of_clusters)
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$classification,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     # main = "Multi-Gaussian with Expectation-Maximization",
+     las = 2)
+
+
+
+# Density-based clustering
+# Import statements
+library(fpc)
+
+model = dbscan(cluster_data,
+               eps = 6,
+               MinPts = 4)
+
+plot(cluster_data, 
+     col = data$cluster_index + 1,
+     pch = model$cluster,
+     xlab = "x-Werte",
+     ylab = "y-Werte",
+     main = "Density-based Cluster",
+     las = 2)
 
 
 ##########################################################################################################
