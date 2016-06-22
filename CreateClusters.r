@@ -1,3 +1,7 @@
+# Homework for Dataanalysis and Datamanagement at the Technical University of Clausthal
+# Confirmation date       20.06.2016
+# Author                  Sören Schleibaum
+
 ################################################################################
 # Declare functions
 ################################################################################
@@ -13,6 +17,7 @@ create_clusters = function(number_of_clusters, rn_start, rn_stop, number_of_poin
   
   data = matrix(0,0,3)
   
+  # Create a predefined number of clusters
   for(i in 1:number_of_clusters){
     
     # If the range of random_numbers is chosen larger the possibility 
@@ -22,6 +27,7 @@ create_clusters = function(number_of_clusters, rn_start, rn_stop, number_of_poin
     
     index = matrix(i,number_of_points,1)
     
+    # Create a single cluster
     new_cluster = cbind(create_single_cluster(random_numbers, number_of_points),
                         index)
     
@@ -31,6 +37,7 @@ create_clusters = function(number_of_clusters, rn_start, rn_stop, number_of_poin
   
   colnames(data) = c("x","y","cluster_index")
   
+  # Transform data to a data.frame
   data = as.data.frame(data)
   
   return(data)
@@ -44,6 +51,7 @@ create_single_cluster = function(random_numbers, number_of_points){
   
   data = matrix
   
+  # Mean
   mean_of_data = c(random_numbers[1],random_numbers[2])
   
   # Covariance matrix of has to have a positiv semidefinite quadratic form
@@ -90,6 +98,7 @@ plot_order = function(number_of_clusters){
   }
 }
 
+
 # Returns information useful for a legend 
 # - Xdata
 # - Ydata
@@ -105,6 +114,7 @@ getLegendInformation = function(xdata, ydata){
   
   return(leg)
 }
+
 
 # Gives back the x and y variables seperated for a given matrix
 # - Data
@@ -138,6 +148,7 @@ getxydata = function(data){
   return(list(datax, datay))
 }
 
+
 # Draws a histogram and its density function.
 # - Data matrix
 # - Spec_data             # Data to be plotted
@@ -147,6 +158,7 @@ getxydata = function(data){
 # - Main
 draw_histogram = function(ggplot, data, spec_data, binwidth, xlab, ylab, main, col = 1){
   
+  # If ggplot is wanted use the ggplot for creating a histogram
   if(ggplot == "ggplot"){
     plot = ggplot(data, aes(x = spec_data)) + 
       geom_histogram(aes(y = ..density..), 
@@ -157,7 +169,8 @@ draw_histogram = function(ggplot, data, spec_data, binwidth, xlab, ylab, main, c
       xlab(xlab) +
       ylab(ylab) + 
       ggtitle(main)
-    
+  
+  # Otherwise use the default Histogram function.  
   }else{
     hist(spec_data,
          breaks = 20,
@@ -174,24 +187,33 @@ draw_histogram = function(ggplot, data, spec_data, binwidth, xlab, ylab, main, c
   return(plot)
 }
 
+
 # Resets the parameters of par to it's default
 resetPar <- function() {
+  
   dev.new()
   op <- par(no.readonly = TRUE)
   dev.off()
   op
+  
 }
+
 
 # Returns the index of the last element which fits a condition
 # - Data
 max_index_of_vector = function(data){
+  
   borders = c()
+  
   for(i in 2:number_of_clusters){
     borders = c(borders,match(i,data$cluster_index)-1)
   }  
+  
   max(borders, na.rm=TRUE)
+  
   return(borders)
 }
+
 
 # Draws a heatmap with the given options
 # - Cluster_data
@@ -200,6 +222,7 @@ max_index_of_vector = function(data){
 # - Borders         # Draw borders of clusters into the plot
 # - Main            # Title of the plot
 draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, main){
+  
   heatmap(as.matrix(cluster_data), 
           Rowv=rowv,
           Colv=colv,
@@ -209,6 +232,7 @@ draw_heatmap = function(cluster_data, rowv = NULL, colv = NULL, borders = NULL, 
           main = main,
           add.expr = abline(h = borders, v = borders, lwd = 1))
 }
+
 
 # Uses the function hclust to perform hierarchical cluster analysis techniques
 # - Cluster_mechanisms          # Names of cluster_mechanisms
@@ -245,20 +269,17 @@ plot_dendrograms = function(cluster_mechanisms, cluster_analysis_output, labels)
          main = main,
          sub = NA,
          xlab = "Datenpunkte",
-<<<<<<< HEAD
          ylab = "Höhe")
     
-=======
-         ylab = "HÃ¶he")
-
->>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
-    # The height can hardly be specified using an algorithm.
+    # The height to seperate the clusters can hardly be specified using an algorithm.
     # Because of that it is not done automatically.
+    # The code below would provide such a functionality
     # abline(h = , 
     #        col = "lightgrey")
     
   }
 }
+
 
 # Uses the Code from the A2R package to draw dendrograms
 # - Cluster_mechanisms
@@ -286,6 +307,7 @@ plot_fancy_dendrograms = function(cluster_meachanism, hierarchical_cluster_analy
   par(resetPar())
 }
 
+
 # Plot round dendograms by using the library ape
 # - Cluster_mechanisms
 # - Cluster_analysis_output
@@ -308,6 +330,7 @@ plot_round_dendrograms = function(cluster_mechanisms, cluster_output){
   }
 }
 
+
 # Creates a scatterplot which shows the original belonging of data points to the cluster 
 # and also displays the new assignment by a hierarchical cluster algorithm as specification 
 # of the symbol.
@@ -322,11 +345,8 @@ scatterplot_hclust_and_data = function(cluster_output, number_of_clusters, data,
   for(i in 1:length(cluster_output)){
     
     cluster_mechanism = paste(toupper(substring(cluster_mechanisms[i],1,1)), substring(cluster_mechanisms[i],2),sep = "")
-<<<<<<< HEAD
-    main = paste("Vergleich tatsächlicher und bestimmter Zuordnung für:", cluster_mechanism)
-=======
-    main = paste("Vergleich tatsÃ¤chlicher und bestimmter Zuordnung fÃ¼r:", cluster_mechanism)
->>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
+    # main = paste("Vergleich tatsächlicher und bestimmter Zuordnung für:", cluster_mechanism)
+    main = cluster_mechanisms[i]
     
     # Divides data into given number of clusters
     analysed_belonging = cutree(cluster_output[[i]],
@@ -360,15 +380,12 @@ scatterplot_hclust_and_data = function(cluster_output, number_of_clusters, data,
 # Import statements
 library(mvtnorm)
 
-# Import statements
-library(mvtnorm)
-
 # Create a predefined number of clusters
-number_of_clusters = 4
+number_of_clusters = 8
 data = create_clusters(number_of_clusters, 
                        0,
-                       100,
-                       20)
+                       250,
+                       200)
 
 # Mention:
 # - Continous data
@@ -393,22 +410,22 @@ data = create_clusters(number_of_clusters,
 # Inspect the data:
 
 head(data)
-# x        y cluster_index
-# 1 67.16443 64.16422             1
-# 2 86.07862 71.77400             1
-# 3 87.80806 80.84759             1
-# 4 78.15669 81.95668             1
-# 5 84.38063 65.20528             1
-# 6 82.87874 68.52617             1
+# x          y cluster_index
+# [1,]  4.148538810  3.1011608             1
+# [2,]  9.859807586  5.8392289             1
+# [3,]  8.529918834  8.8074696             1
+# [4,]  6.153870381 -0.8054947             1
+# [5,]  4.252371498  1.5169027             1
+# [6,] -0.008676228 -0.9352170             1
 
 summary(data)
-# x                y          cluster_index  
-# Min.   :-14.00   Min.   :-2.383   Min.   :1.000  
-# 1st Qu.: 12.13   1st Qu.:25.835   1st Qu.:2.000  
-# Median : 20.65   Median :45.192   Median :3.000  
-# Mean   : 31.72   Mean   :46.242   Mean   :2.733  
-# 3rd Qu.: 43.84   3rd Qu.:65.733   3rd Qu.:4.000  
-# Max.   : 92.07   Max.   :90.555   Max.   :4.000  
+# x                 y          cluster_index  
+# Min.   :-10.326   Min.   :-3.953   Min.   :1.000  
+# 1st Qu.:  1.259   1st Qu.: 1.081   1st Qu.:2.000  
+# Median :  3.295   Median : 3.332   Median :3.000  
+# Mean   :  4.047   Mean   : 3.361   Mean   :2.828  
+# 3rd Qu.:  7.525   3rd Qu.: 5.739   3rd Qu.:4.000  
+# Max.   : 16.772   Max.   :11.248   Max.   :4.000 
 
 ##########################################################################################################
 # Scatterplot
@@ -416,7 +433,7 @@ summary(data)
 par(mfrow=c(1,1))
 plot(data[,c("x","y")],
      col = data[,"cluster_index"]+1,
-     main = "Zufallsbasierter Datensatz von zwei Variablen",
+     # main = "Zufallsbasierter Datensatz von zwei Variablen",
      las = 2)
 
 # Get information contained in the legend 
@@ -494,7 +511,10 @@ library(ggplot2)
 
 par(mfrow = c(1,1))
 
+# Draw Histogram of x value
 draw_histogram("ggplot", data, data$x, 5 ,"X-Werte", "Dichte", "Verteilung der x-Werte")
+
+# Draw Histogram of y value
 draw_histogram("ggplot", data, data$y, 5 ,"Y-Werte", "Dichte", "Verteilung der y-Werte")
 
 par(mfrow = plot_order(number_of_clusters))
@@ -531,8 +551,10 @@ par(mfrow=c(1,1))
 cluster_data = cbind(data$x, data$y)
 dist(cluster_data) -> cluster_data_dist
 
+# Borders represent the border indexes of the clusters in the given data 
 borders = max_index_of_vector(data)
 
+# Draw different heatmaps, specified by the main option
 draw_heatmap(cluster_data_dist, NA, NA, main = "Heatmap of all clusters")
 draw_heatmap(cluster_data_dist, NA, NA, borders, main = "Heatmap with real borders")
 # Mention reordering of data
@@ -542,19 +564,15 @@ draw_heatmap(cluster_data_dist, main = "Heatmap with dendrograms")
 # How to set the binwidth?
 # Make names of the functions consistent
 
+
 ##########################################################################################################
 # Vergleich von Cluster-Verfahren
 ##########################################################################################################
 
 ##########################################################################################################
 # (a) Betrachten Sie verschiedene Cluster-Verfahren Ihrer Wahl und wenden Sie diese auf die Daten
-<<<<<<< HEAD
 # oben an. Beachten Sie dabei, dass die "wahre" Cluster-Zugehörigkeit hier nicht eingehen darf
 # ("unsupervised learning").
-=======
-# oben an. Beachten Sie dabei, dass die â€œwahreâ€ Cluster-ZugehÃ¶rigkeit hier nicht eingehen darf
-# (â€œunsupervised learningâ€).
->>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
 par(resetPar())
 
 ##########################################################################################################
@@ -568,6 +586,7 @@ cluster_mechanisms = c("ward.D",
                        "median",
                        "centroid")
 
+# Performs a hierarchically cluster analysis for the eight predefined functions
 hierarchical_cluster_analysis_output = perform_hierarchical_cluster_analysis(cluster_mechanisms, 
                                                                              cluster_data_dist)
 
@@ -654,7 +673,7 @@ plot(cluster_data,
      pch = model$cluster,
      xlab = "x-Werte",
      ylab = "y-Werte",
-     main = "Fuzzy C-Clustern",
+     # main = "Fuzzy C-Clustern",
      las = 2)
 
 # Display the centers of the cluster
@@ -679,152 +698,7 @@ plot(cluster_data,
      pch = model$classification,
      xlab = "x-Werte",
      ylab = "y-Werte",
-     main = "Multi-Gaussian with Expectation-Maximization",
-     las = 2)
-
-
-##########################################################################################################
-# Thanks to MingXueWang who provided some orientation on:
-# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
-# Density-based Cluster
-
-# Import statements
-library(fpc)
-
-# The value of eps needs some experimentation. For four clusters with 10 to 20 data points 6 seemed 
-# to be a good value.
-model = dbscan(cluster_data,
-               eps = 6,
-               MinPts = 4)
-
-plot(cluster_data, 
-     col = data$cluster_index + 1,
-     pch = model$cluster,
-     xlab = "x-Werte",
-     ylab = "y-Werte",
-     main = "Density-based Cluster",
-     las = 2)
-
-
-# TODO
-# Random Forest for clustering 
-# library(randomForest)
-# 
-# cluster_data.rf = randomForest(cluster_data, prox = TRUE)
-# cluster_data.p = classCenter(data$x, data$y, cluster_data.rf$prox)
-# plot(cluster_data,col= data$cluster_index + 1)
-# points(cluster_data.p)
-# 
-# data(iris)
-# iris.rf <- randomForest(iris[,-5], iris[,5], prox=TRUE)
-# iris.p <- classCenter(iris[,-5], iris[,5], iris.rf$prox)
-# plot(iris[,3], iris[,4], pch=21, xlab=names(iris)[3], ylab=names(iris)[4],
-#      bg=c("red", "blue", "green")[as.numeric(factor(iris$Species))],
-#      main="Iris Data with Prototypes")
-# points(iris.p[,3], iris.p[,4], pch=21, cex=2, bg=c("red", "blue", "green"))
-
-# - Maybe not c for combining the results but cbind or something like append
-# - Cluster data based on the origin dataset to get an appropriate labeling of the data
-
-##########################################################################################################
-# Dendrograms
-plot_dendrograms(cluster_mechanisms,
-                 hierarchical_cluster_analysis_output,
-                 data$cluster_index)
-
-# TODO
-# - Code is producing an error
-plot_fancy_dendrograms(cluster_mechanisms,
-                       hierarchical_cluster_analysis_output)
-
-par(resetPar())
-
-# Import statements
-library(ape)
-
-par(mfrow = plot_order(length(cluster_mechanisms)))
-
-# Plot round dendrograms
-plot_round_dendrograms(cluster_mechanisms,
-                       hierarchical_cluster_analysis_output)
-
-
-##########################################################################################################
-# Scatterplots
-par(mfrow=plot_order(number_of_clusters))
-scatterplot_hclust_and_data(hierarchical_cluster_analysis_output,
-                            number_of_clusters,
-                            data,
-                            cluster_mechanisms)
-
-
-##########################################################################################################
-# Thanks to MingXueWang who provided some orientation on:
-# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
-# K-means clustering
-
-model = kmeans(cluster_data, 
-               centers = number_of_clusters)
-
-plot(cluster_data, 
-     col = data$cluster_index + 1,
-     pch = model$cluster,
-     xlab = "x-Werte",
-     ylab = "y-Werte",
-     main = "K-means Clustern",
-     las = 2)
-
-# Display the centers of the cluster
-points(model$centers, 
-       pch=1:number_of_clusters, 
-       cex=2)
-
-
-##########################################################################################################
-# Thanks to MingXueWang who provided some orientation on:
-# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
-# Fuzzy C-Means
-
-# Import statements
-library(e1071)
-
-model = cmeans(cluster_data,
-               number_of_clusters,
-               iter.max = 100,
-               m = 2,
-               method = "cmeans")
-
-plot(cluster_data, 
-     col = data$cluster_index + 1,
-     pch = model$cluster,
-     xlab = "x-Werte",
-     ylab = "y-Werte",
-     main = "Fuzzy C-Clustern",
-     las = 2)
-
-# Display the centers of the cluster
-points(model$centers, 
-       pch=1:number_of_clusters, 
-       cex=2)
-
-
-##########################################################################################################
-# Thanks to MingXueWang who provided some orientation on:
-# https://www.kaggle.com/coolman/d/uciml/iris/notebook-f5225665739c989910b3/notebook
-# Multi-Gaussian with Expectation-Maximization
-
-# Import statements
-library(mclust)
-
-model = Mclust(cluster_data,
-               number_of_clusters)
-
-plot(cluster_data, 
-     col = data$cluster_index + 1,
-     pch = model$classification,
-     xlab = "x-Werte",
-     ylab = "y-Werte",
-     main = "Multi-Gaussian with Expectation-Maximization",
+     # main = "Multi-Gaussian with Expectation-Maximization",
      las = 2)
 
 
@@ -883,11 +757,7 @@ plot(cluster_data,
 # - Varierende Zahl an Clustern
 
 # - Verschiedene Mittelwertsvektoren/Kovarianzmatrizen
-<<<<<<< HEAD
 # Die Matrizen ändern sich aufgrund des Zufallsbasierten Verfahrens automatisch.
-=======
-# Die Matrizen Ã¤ndern sich aufgrund des Zufallsbasierten Verfahrens automatisch.
->>>>>>> e339923814513b2be7a45a6587cf6b35fe08f56c
 
 
 
