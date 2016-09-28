@@ -42,3 +42,17 @@ ylab = 'Withinss of group'
 plot(wss, xlab = xlab, ylab = ylab)
 
 
+################################################################################
+# Calculation of the within sum of squares in general
+B = matrix(c(29,5,0,33,5,0,10,22,3,7),ncol=2)
+Bd = dist(B)
+Bd_km = kmeans(B, 4)
+# Only two points are within one cluster:
+x1 = c(5,10)
+x2 = c(5,7)
+# The center of this cluster is:
+xm = c(5,8.5)
+# Within sum of squares is
+w1 = (5-5)**2 + (5-5)**2 + (10-8.5)**2 + (8.5-7)**2 
+
+
