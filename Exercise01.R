@@ -1,20 +1,23 @@
 # Datenanalyse und Datenmanagement
 # Übung1 - 14.04.2016
 
-#############################################################
-# Exercise 1
+################################################################################
+# Aufgabe 1
+################################################################################
 duration_of_calls = c(8, 17, 2, 3, 31, 7, 14, 1, 1, 11)
 cost_in_euro = sum(duration_of_calls)*0.49
 
-#############################################################
-# Exercise 2
+################################################################################
+# Aufgabe 2
+################################################################################
 calls_lt_ten_min = length(duration_of_calls[duration_of_calls>10])
 number_of_calls_lt_10_min = sum(duration_of_calls>10)
 calls_lt_ten_min = which(duration_of_calls>10)
 mean_length_of_calls = mean(duration_of_calls)
 
-#############################################################
-# Exercise 3
+################################################################################
+# Aufgabe 3
+################################################################################
 data = rnorm(10, mean = 10, sd = 1)
 log_data_gt_23 = log(data)>2.3
 a = log_data_gt_23[2]
@@ -26,16 +29,18 @@ test_result = ((a+b+c) == 3)
 # rnorm returns random generation for the normal distribution 
 # with mean equal to mean and standard deviation equal to sd
 
-#############################################################
-# Exercise 4
+################################################################################
+# Aufgabe 4
+################################################################################
 # a)
 veg_data = c('Alice'=TRUE,'Bob'=FALSE,'Carol'=TRUE,'Dan'=FALSE,'Chuck'=FALSE)
 
 # b)
 veg_data['Bob']=TRUE
 
-#############################################################
-# Exercise 5
+################################################################################
+# Aufgabe 5
+################################################################################
 # a)
 veg_data_txt = read.table("~/Dokumente/TU Clausthal/Datenanalyse und Datenmanagement/veg_data.txt", quote="\"", comment.char="")
 names(veg_data_txt) = c("Name","Vegetarier")
