@@ -180,6 +180,30 @@ screeplot(pca_prisoners, type="lines")
 # Exercise 19
 ################################################################################
 
+measure <- read.csv("~/Documents/TU Clausthal/Datenanalyse und Datenmanagement/measure.txt", sep="")
+
+summary(measure)
+
+pairs(measure,
+      lower.panel = panel.smooth,
+      upper.panel = panel.cor,
+      diag.panel = panel.hist,
+      pch = as.numeric(measure$gender))
+
+small_measure = matrix(c(measure$chest,
+                  measure$waist,
+                  measure$hips),
+                  ncol = 3)
+
+colnames(small_measure) = c('chest','waist','hips')
+
+pca_measure = princomp(small_measure)
+
+plot(pca_measure$scores[,1],
+     pca_measure$scores[,2],
+     pch = as.numeric(measure$gender),
+     xlab = 'Comp. 1',
+     ylab = 'Comp. 2')
 
 
 ################################################################################
