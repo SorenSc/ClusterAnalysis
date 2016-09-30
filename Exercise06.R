@@ -22,7 +22,7 @@ headsize =
 pca_headsize = princomp(headsize)
 # princomp(cor(headsize)) leads to the same results
 
-summary(pca_headsize, loadings = TRUE)
+summary(pca_headsize, loadings = T)
 
 plot(pca_headsize)
 plot(pca_headsize$sdev/sum(pca_headsize$sdev), 
@@ -70,7 +70,7 @@ headsize <- as.data.frame(headsize)
 # Principal components
 head_pca <- princomp(headsize)
 head_pca
-summary(head_pca, loadings = TRUE)
+summary(head_pca, loadings = T)
 
 # Visualization of the explained variance
 plot(head_pca)
@@ -115,7 +115,7 @@ eigen(cor(headsize))$values*100/4
 # Principal components
 head_pca <- princomp(headsize)
 head_pca
-summary(head_pca, loadings = TRUE)
+summary(head_pca, loadings = T)
 
 # Varanschaulichung der erkl?rten Varianz
 plot(head_pca)
@@ -139,7 +139,7 @@ var(headsize)
 ################################################################################
 # Exercise 18
 ###############################################################################
-source("test.R")
+source("functions.R")
 
 prisoners = matrix(c(1.000,0.402,0.396,0.301,0.305,0.339,0.340,
                     0.402,1.000,0.618,0.150,0.135,0.206,0.183,
@@ -163,7 +163,7 @@ colnames(prisoners) = rownames(prisoners) = names
 
 pca_prisoners = princomp(covmat = prisoners)
 
-summary(pca_prisoners, loadings = TRUE)
+summary(pca_prisoners, loadings = T)
 
 plot(pca_prisoners)
 
@@ -180,7 +180,7 @@ screeplot(pca_prisoners, type="lines")
 # Exercise 19
 ################################################################################
 
-measure <- read.csv("~/Documents/TU Clausthal/Datenanalyse und Datenmanagement/measure.txt", sep="")
+measure = read.csv("~/Documents/TU Clausthal/Datenanalyse und Datenmanagement/measure.txt", sep="")
 
 summary(measure)
 
@@ -190,21 +190,26 @@ pairs(measure,
       diag.panel = panel.hist,
       pch = as.numeric(measure$gender))
 
+# The variable 'gender' cannot be included, because it's not numeric.
 small_measure = matrix(c(measure$chest,
                   measure$waist,
                   measure$hips),
                   ncol = 3)
 
+# Set colnames for better interpretation
 colnames(small_measure) = c('chest','waist','hips')
 
+# PC Analysis and having a look to it
 pca_measure = princomp(small_measure)
+summary(pca_measure, loadings = T)
 
-plot(pca_measure$scores[,1],
-     pca_measure$scores[,2],
+# Visualize the data
+plot(pca_measure$scores[,1:2],
      pch = as.numeric(measure$gender),
      xlab = 'Comp. 1',
-     ylab = 'Comp. 2')
-
+     ylab = 'Comp. 2',
+     main = 'Comparison of the components')
+legend("bottomleft", levels(measure$gender), pch=1:2, bty="n")
 
 ################################################################################
 # Exercise 20
