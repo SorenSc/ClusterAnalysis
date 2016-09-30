@@ -3,7 +3,7 @@
 ################################################################################
 
 # Import data about headsize
-headsize <-
+headsize =
   matrix(c(191, 195, 181, 183, 176, 208, 189, 197, 188, 192, 179, 183, 174, 190,
            188, 163, 195, 186, 181, 175, 192, 174, 176, 197, 190, 155, 149, 148,
            153, 144, 157, 150, 159, 152, 150, 158, 147, 150, 159, 151, 137, 155,
@@ -15,6 +15,22 @@ headsize <-
          , nrow = 25, ncol = 4
          , dimnames = list(character(0)
                            , c("head1", "breadth1", "head2", "breadth2")))
+
+# Scale is not necessary, because all variables have the same unit
+
+# PCA of the data
+pca_headsize = princomp(headsize)
+# princomp(cor(headsize)) leads to the same results
+
+summary(pca_headsize, loadings = TRUE)
+
+plot(pca_headsize)
+plot(pca_headsize$sdev/sum(pca_headsize$sdev), 
+     type = 'b',
+     ylab = 'Explained variances')
+
+################################################################################
+# Tryings to calculate all variables
 
 # Analysis of principal components makes sense if 
 #   1. The number of variables is large in comparison to the number of observations
@@ -40,7 +56,6 @@ cor(headsize)
 
 #################################################################################
 # Estimation of the principal components
-################################################################################
 
 # Returns eigenvectors and eigenvalues
 eigen(headsize)
@@ -75,7 +90,6 @@ round(eigenvalues/sum(eigenvalues)*100,digits=2)
 
 #################################################################################
 # Use of the correlation matrix
-################################################################################
 
 # Correlation matrix
 cor(headsize)
