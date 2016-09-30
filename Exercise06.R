@@ -1,5 +1,5 @@
 ################################################################################
-# Aufgabe 17
+# Exercise 17
 ################################################################################
 
 # Import data about headsize
@@ -137,13 +137,51 @@ cov(headsize)
 var(headsize)
 
 ################################################################################
-# Aufgabe 18
+# Exercise 18
 ###############################################################################
+source("test.R")
+
+prisoners = matrix(c(1.000,0.402,0.396,0.301,0.305,0.339,0.340,
+                    0.402,1.000,0.618,0.150,0.135,0.206,0.183,
+                    0.396,0.618,1.000,0.321,0.289,0.363,0.345,
+                    0.301,0.150,0.321,1.000,0.846,0.759,0.661,
+                    0.305,0.135,0.289,0.846,1.000,0.797,0.800,
+                    0.339,0.206,0.363,0.759,0.797,1.000,0.736,
+                    0.340,0.183,0.345,0.661,0.800,0.736,1.000),
+                   ncol = 7)
+
+names = c('Head length','Head breadth','Face breadth','Left finger length',
+          'Left forearm length','Left foot length','Height')
+
+summary(prisoners)
+pairs(prisoners,
+      lower.panel = panel.smooth,
+      upper.panel = panel.cor,
+      diag.panel = panel.hist)
+
+colnames(prisoners) = rownames(prisoners) = names 
+
+pca_prisoners = princomp(covmat = prisoners)
+
+summary(pca_prisoners, loadings = TRUE)
+
+plot(pca_prisoners)
+
+screeplot(pca_prisoners, type="lines")
+
+# Which components should be included?
+# Based on the eigenvectors the first two components should be included.
+# Based on the a desired explained variance of more than nintey percent,
+# the first four,
+# based on the screeplot the first four (take the component with the greatest 
+# break in the smoothness).
 
 ################################################################################
-# Aufgabe 19
+# Exercise 19
 ################################################################################
 
+
+
 ################################################################################
-# Aufgabe 20
+# Exercise 20
 ################################################################################
