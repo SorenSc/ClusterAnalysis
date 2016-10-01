@@ -6,7 +6,7 @@ ger = c(2,4,1,3,2,4,4,1,2,3)
 phi = c(3,4,1,2,2,3,3,2,2,2)
 mat = c(1,3,2,4,1,2,2,4,3,1)
 phy = c(2,2,2,5,2,2,3,4,3,3)
-A = cbind(deu,phil,ma,phy)
+A = cbind(ger,phi,mat,phy)
 
 As = scale(A)
 
@@ -16,6 +16,9 @@ R = (1/length(A[,1]))*t(As)%*%As
 R
 
 eR = eigen(R)
+eR
+
+eigen(A)
 
 a1 = sqrt(eR$values[1])*eR$vectors[,1]
 a2 = sqrt(eR$values[2])*eR$vectors[,2]
@@ -26,6 +29,8 @@ Ar = cbind(a1,a2,a3,a4)
 RK = Ar %*% t(Ar)
 
 summary(princomp(As), loadings = TRUE)
+
+?princomp
 
 plot(as.data.frame(A))
 pairs(as.data.frame(A),

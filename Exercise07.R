@@ -13,24 +13,35 @@ c52 = data$VitC[data$Cult == 'c52']
 
 boxplot(c39,c52, names = c('c39','c52'))
 
-t.test(c39,c52)
+ttvc = t.test(c39,c52)
 # P-value is smaller than the given significant-level. Because of that,
 # H0 is rejected. There seems to be a true difference in the means.
 
+md = mean(c39)-mean(c52)
+round(abs(md-ttvc$conf.int[2]),4)==round(md-ttvc$conf.int[1],4)
+
+# The confidence interval can be calculated by doing the following: 
+# Be aware that the result is not exactly the same. The intervall is
+# shifted a little bit in the negative direction.
+md-ttvc$statistic*sqrt((sd(c39)/length(c39))+(sd(c52)/length(c52)))
 
 ################################################################################
 # Exercise 22
 ################################################################################
-knie <- read.csv("~/Downloads/knie.txt", sep="")
+knie <- read.csv("~/Documents/TU Clausthal/Datenanalyse und Datenmanagement/knie.txt", sep="")
+
 head(knie)
-t.test(PAIN~factor(TH), data = knie)
-# Does show the variables in a factorized way. Without factor() 
-# it works similar. Nevertheless factor() should be used.
 
+pla = knie$PAIN[knie$TH == 0]
+the = knie$PAIN[knie$TH == 1]
 
-attach(knie)
-chisq.test(table(TH,PAIN))
-detach(knie)
+t.test(pla, the)
+# There is a true difference in means to the given significance level
+
+chisq.test(table(knie$TH, knie$PAIN))
+# There is a true difference in means to the given significance level
+
+################################################################################
 
 men = c(1,-1,0,-1,-1,1,2,0,1,-1,0,-1,2,
         0,2,2,1,0,1,1,1,-1,0,-1,0,1,0,-1,
