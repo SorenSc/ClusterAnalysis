@@ -100,3 +100,27 @@ fisher.test(cakes)
 ################################################################################
 # Exercise 25
 ################################################################################
+
+men = c(1,-1,0,-1,-1,1,2,0,1,-1,0,-1,2,0,2,2,1,0,1,1,1,-1,0,-1,0,1,0,-1,-1,1,0,1,-1,0,-2,
+        2,2,-1,-1,1,0,1,0,-1,1,-1,0,0)
+women = c(1,2,0,2,-2,1,-1,2,-1,0,-2,0,-1,-1,1,2,1,1,0,-2,2,-1,-1,-2,-1,2,-1,-1,1,1,-2,-2,-1,
+          2,1,0,2,1,0,1,1,0,0,0,1,1,1,0,1,2,1,0)
+
+both = c(men, women)
+
+t.test(both)
+# There is no significant difference to 0.
+
+t.test(men, women)
+# Between the statements of men and women is no significant difference.
+
+# Compare the ratio of answer frequencies
+dta = data.frame("answer" = c(ff,mm), 
+                  "gender" = factor(rep(c("w","m"),c(length(ff),length(mm)))))
+t(table(dta))
+
+chisq.test(table(dta))
+# Between the statements of men and women is no significant difference.
+
+fisher.test(table(dta))
+# Between the statements of men and women is no significant difference.
