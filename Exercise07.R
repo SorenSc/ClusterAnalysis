@@ -1,49 +1,25 @@
+################################################################################
+# Exercise 21
+################################################################################
 
-################################################################################
-# Aufgabe 21
-################################################################################
 library(MASS)
-data(cabbages)
-cabbages
+data = cabbages
 
-library(ggplot2)
-qplot(Cult, VitC, data=cabbages)
-head(cabbages)
+head(data)
+summary(data)
 
-t.test(VitC~Cult, data=cabbages)
-# Check wether the two means are equal
-# Df is not a round number because the variance was estimated
+c39 = data$VitC[data$Cult == 'c39']
+c52 = data$VitC[data$Cult == 'c52']
 
-# Welch Two Sample t-test
-# 
-# data:  VitC by Cult
-# t = -6.3909, df = 56.376, p-value = 3.405e-08
-# alternative hypothesis: true difference in means is not equal to 0
-# 95 percent confidence interval:
-#   -16.94296  -8.85704
-# sample estimates:
-#   mean in group c39 mean in group c52 
-# 51.5              64.4
+boxplot(c39,c52, names = c('c39','c52'))
 
-t.test(VitC~Cult, data=cabbages, var.equal=TRUE)
-# Df is a round value
+t.test(c39,c52)
+# P-value is smaller than the given significant-level. Because of that,
+# H0 is rejected. There seems to be a true difference in the means.
 
-# Welch Two Sample t-test
-# 
-# 
-# Two Sample t-test
-
-# data:  VitC by Cult
-# t = -6.3909, df = 58, p-value = 3.065e-08
-# alternative hypothesis: true difference in means is not equal to 0
-# 95 percent confidence interval:
-#   -16.940479  -8.859521
-# sample estimates:
-#   mean in group c39 mean in group c52 
-# 51.5              64.4 
 
 ################################################################################
-# Aufgabe 22
+# Exercise 22
 ################################################################################
 knie <- read.csv("~/Downloads/knie.txt", sep="")
 head(knie)
@@ -85,13 +61,13 @@ chisq.test(table(data))
 
 
 ################################################################################
-# Aufgabe 23
+# Exercise 23
 ################################################################################
 
 ################################################################################
-# Aufgabe 24
+# Exercise 24
 ################################################################################
 
 ################################################################################
-# Aufgabe 25
+# Exercise 25
 ################################################################################
