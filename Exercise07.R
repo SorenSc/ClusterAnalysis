@@ -90,6 +90,13 @@ t.test(run_one, run_two, paired = T, alternative = 'greater', conf.level = alpha
 # Exercise 24
 ################################################################################
 
+cakes = matrix(c(21,30,25,29,19,24), ncol = 2)
+colnames(cakes) = c('tasty','distasteful')
+rownames(cakes) = c('A','B','C')
+
+chisq.test(cakes)
+fisher.test(cakes)
+
 ################################################################################
 # Exercise 25
 ################################################################################
