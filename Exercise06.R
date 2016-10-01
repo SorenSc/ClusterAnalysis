@@ -211,6 +211,61 @@ plot(pca_measure$scores[,1:2],
      main = 'Comparison of the components')
 legend("bottomleft", levels(measure$gender), pch=1:2, bty="n")
 
+# Tryin to understand the meaning of component 2
+plot(measure$waist, measure$hips)
+hist(measure$waist)
+hist(measure$hips)
+
 ################################################################################
 # Exercise 20
 ################################################################################
+
+jet = read.csv("~/Documents/TU Clausthal/Datenanalyse und Datenmanagement/jet.txt", sep="")
+
+summary(jet)
+head(jet)
+
+jet_small = matrix(c(jet$SPR, jet$RGF, jet$PLF, jet$SLF), ncol = 4)
+colnames(jet_small) = colnames(jet)[2:5]
+
+pca_jet = princomp(jet_small)
+
+plot(pca_jet)
+summary(pca_jet, loadings = T)
+# Based on these results, two principal components should be chosen.
+
+################################################################################
+plot(pca_jet$scores[,1:2],
+     pch = as.numeric(jet$CAR))
+
+################################################################################
+# Clustering based on the two principal components
+jet_new = pca_jet$scores[,1:2]
+
+jet_new = scale(jet_new)
+
+km = kmeans(jet_new, centers = 2, nstart = 1000)
+# if centers is a number, how many random sets should be chosen?
+
+sl = hclust(dist(jet_new), method = "single")
+cl = hclust(dist(jet_new), method = "complete")
+
+par(mfrow=c(2,2))
+plot(jet_new, col = km$cluster, main = 'K-means')
+plot(jet_new, col = cutree(sl, k=2), main = 'Single linkage')
+plot(jet_new, col = cutree(cl, k=2), main = 'Complete linkage')
+
+# Another way to perform the PCA
+prc_jet = prcomp(jet_small)
+prc_jet = prc_jet$x[,1:2]
+
+km = kmeans(prc_jet, centers = 2, nstart = 1000)
+# if centers is a number, how many random sets should be chosen?
+
+sl = hclust(dist(prc_jet), method = "single")
+cl = hclust(dist(prc_jet), method = "complete")
+
+par(mfrow=c(2,2))
+plot(prc_jet, col = km$cluster, main = 'K-means')
+plot(prc_jet, col = cutree(sl, k=2), main = 'Single linkage')
+plot(prc_jet, col = cutree(cl, k=2), main = 'Complete linkage')
