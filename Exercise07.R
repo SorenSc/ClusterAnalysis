@@ -75,6 +75,17 @@ chisq.test(table(data))
 # Exercise 23
 ################################################################################
 
+run_one = c(15.1,14.3,14.4,13.1,12.9,13.8,11.7,12.8,14.1,13.6,14.2)
+run_two = c(14.9,14.2,14.5,13.1,12.6,14.0,11.7,12.3,13.8,13.7,14.0)
+
+# The mean is nearly similar, only the 25% and 75% quantils have shifted to 
+# lower times.
+boxplot(run_one, run_two)
+
+# Based on the task, I think, specifying the confidenc level is right.
+alpha = 0.1
+t.test(run_one, run_two, paired = T, alternative = 'greater', conf.level = alpha)
+
 ################################################################################
 # Exercise 24
 ################################################################################
