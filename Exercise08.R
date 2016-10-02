@@ -1,5 +1,6 @@
 # The following link might be useful
 # http://www.stat.yale.edu/Courses/1997-98/101/linmult.htm
+# https://www.youtube.com/watch?v=ksOErR1ldgo
 
 ################################################################################
 # Exercise 26
@@ -7,6 +8,10 @@
 
 dose = c(1,5,3,8,2,2,10,8,7,4)
 time = c(0.5,2.9,0.6,3.0,1.5,1.1,3.9,2.5,3.1,1.2)
+
+cor(dose, time)
+cov(dose, time)/(sd(dose)*sd(time))==(30/9)/(sd(dose)*sd(time))
+sd(dose)==sqrt(86/9)
 
 lm = lm(time~dose)
 
@@ -19,10 +24,15 @@ abline(lm$coefficients)
 lm$coefficients[1]+lm$coefficients[2]*5.5
 predict(lm, newdata = data.frame(dose=c(5.5)))
 
-################################################################################
-# Exercise 27
-################################################################################
+summary(lm)
 
+1-((1-0.8188)*((length(dose)-1)/(length(dose)-2)))
+1-((1-R^2)*(N-1)/(N-k-1))
+
+plot(dose, time)
+plot(lm)
+
+################################################################################
 dose = c(1,5,3,8,2,2,10,8,7,4)
 reaction = c(0.5,2.9,0.6,3.0,1.5,1.1,3.9,2.5,3.1,1.2)
 data = data.frame(dose,reaction)
@@ -57,8 +67,8 @@ abline(regressionLine, col = 3)
 # Klausr
 # Einheiten erwähnen
 # R-squared
-  # Circa 82% der Variation in y lässt sich durch x erklären
-  # corOfData ist gleich R-squared
+# Circa 82% der Variation in y lässt sich durch x erklären
+# corOfData ist gleich R-squared
 # Da es nur einen Preditktor gibt ist die p-value der beiden Test gleich
 # Generell erklärt der zweite Test, ob die erklärenden Variablen einen tatsächlichen
 # Einfluss auf den Wert haben
@@ -67,6 +77,59 @@ predict(regressionLine, newdata = data.frame(reaction=c(5.5,6)))
 # TODO
 # Fehler, da Zeilen und Spaltenzuordnung nicht übereinstimmt
 plot(regressionLine)
+
 # Dritter plot ...Varianz ist im mittleren bereich relativ hoch
 # Letzter Graph 
-  # hohes residuum und hohen laverage sind ein schlechtes zeichen
+# hohes residuum und hohen laverage sind ein schlechtes zeichen
+################################################################################
+# Exercise 27
+################################################################################
+
+?trees
+head(trees)
+summary(trees)
+boxplot(trees)
+
+################################################################################
+
+plot(trees$Volume~trees$Girth)
+plot(trees$Volume~trees$Height)
+
+################################################################################
+
+lmG = lm(trees$Volume~trees$Girth)
+lmH = lm(trees$Volume~trees$Height)
+
+summary(lmG)
+summary(lmH)
+
+################################################################################
+
+plot(trees$Volume~trees$Girth)
+abline(lmG$coefficients)
+plot(trees$Volume, lmG$fitted.values)
+
+plot(trees$Volume~trees$Height)
+abline(lmH$coefficients)
+plot(trees$Volume, lmH$fitted.values)
+
+################################################################################
+
+lmB = lm(trees$Volume~trees$Girth + trees$Height)
+summary(lmB)
+
+plot(trees$Volume,lmB$fitted.values)
+
+################################################################################
+
+anova(lmG, lmB)
+anova(lmH, lmB)
+
+################################################################################
+
+plot(lmB)
+
+################################################################################
+
+lmL = lm(log(trees$Volume) ~ log(trees$Girth) + log(trees$Height))
+summary(lmL)
