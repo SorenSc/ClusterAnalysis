@@ -23,6 +23,11 @@ round(abs(md-ttvc$conf.int[2]),4)==round(md-ttvc$conf.int[1],4)
 # The confidence interval can be calculated by doing the following: 
 # Be aware that the result is not exactly the same. The intervall is
 # shifted a little bit in the negative direction.
+
+################################################################################
+# TODO                                                                         #
+# the calculation of the CI is not right                                       #
+################################################################################
 md-ttvc$statistic*sqrt((sd(c39)/length(c39))+(sd(c52)/length(c52)))
 
 ################################################################################
