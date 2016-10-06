@@ -7,10 +7,12 @@ X = as.dist(X)
 
 sc = hclust(X, method = "single")
 cc = hclust(X, method = "complete")
+ac = hclust(X, method = 'average')
 
 plot(sc, main = "Single Linkage", xlab = '')
 plot(cc, main = "Complete Linkage", xlab = '')
 abline(h = 10, col = "grey")
+plot(ac, main = ('Average Linkage'), xlab = '')
 
 
 ################################################################################

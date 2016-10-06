@@ -11,4 +11,20 @@
 # Exercise 14
 ################################################################################
 
-# Offline task
+distM = matrix(c(0,9,7,12,8,9,0,4,2,5,7,4,0,1,13,12,2,1,0,6,8,5,13,6,0), ncol=5)
+colnames(distM) = rownames(distM) = c('A','B','C','D','E')
+distM = as.dist(distM)
+distM
+
+hca = hclust(distM, method = 'single')
+plot(hca)
+
+hca = hclust(distM, method = 'complete')
+plot(hca)
+
+hca = hclust(distM, method = 'average')
+plot(hca)
+
+hca = hclust(distM, method = 'centroid')
+plot(hca)
+hca$height

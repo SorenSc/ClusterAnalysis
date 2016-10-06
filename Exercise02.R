@@ -1,8 +1,5 @@
-# Datenanalyse und Datenmanagement
-# Übung1 - 14.04.2016
-
 ################################################################################
-# Aufgabe 6
+# Exercise 6
 ################################################################################
 letters = c("E","D","A","D","C","D","B","E","C","E","D","B","B","C","B","A","B","C","C","C","A","B","C","A","A","C","A","E","E","A")
 
@@ -23,9 +20,10 @@ hist(rel_dist_letters, main="Histogram")
 library(plotrix)
 pie3D(abs_dist_letters, main="Piechart")
 pie3D(rel_dist_letters, main="Piechart")
+pie(rel_dist_letters)
 
 ################################################################################
-# Aufgabe 7
+# Exercise 7
 ################################################################################
 men_women = HairEyeColor[,,1]+HairEyeColor[,,2]
 barplot(men_women, main = "men and women")
@@ -33,11 +31,12 @@ barplot(HairEyeColor[,,1], main="men")
 barplot(HairEyeColor[,,2], main="women")
 
 ################################################################################
-# Aufgabe 8
+# Exercise 8
 ################################################################################
 par(mfrow = c(2,2))
 
 # a)
+library(cluster)
 agriculture
 # [ , 1]	x	 numeric	 per capita GNP
 # [ , 2]	y	 numeric	 percentage in agriculture
@@ -54,6 +53,7 @@ agr_data$region = factor(c("N","N","N","S","S","S","N","S","N","N","N","N"))
 boxplot(x~region,agr_data, main="GNP by region")
 boxplot(y~region,agr_data, main="% of agr by region")
 
+
 # e)
 x = agr_data$x[agr_data$region == "N"]
 y = agr_data$y[agr_data$region == "N"]
@@ -64,7 +64,7 @@ y = agr_data$y[agr_data$region == "S"]
 plot(x,y)
 
 ################################################################################
-# Aufgabe 9
+# Exercise 9
 ################################################################################
 par(mfrow=c(1,1))
 agr_data$region = NULL

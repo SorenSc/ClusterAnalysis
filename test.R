@@ -1,4 +1,23 @@
 ################################################################################
+# dnorm, pnorm, qnorm, rnorm
+################################################################################
+# The following code is based on 
+# https://cran.r-project.org/web/packages/ggfortify/vignettes/plot_dist.html
+library(ggfortify)
+
+d = ggdistribution(dnorm, seq(-3, 3, 0.1), mean = 0, sd = 1)
+d + ggtitle('Dnorm, Dichtefunktion')
+
+p = ggdistribution(pnorm, seq(-3, 3, 0.1), mean = 0, sd = 1)
+p + ggtitle('Pnorm, Verteilungsfunktion')
+
+main = 'Qnorm, Quantilfunktion'
+plot(qnorm(seq(0,1,0.01)), main = main)
+
+autoplot(density(rnorm(1:50)), fill = 'red')
+
+
+################################################################################
 # Tryings to PCA
 ################################################################################
 
@@ -28,7 +47,7 @@ a4 = sqrt(eR$values[4])*eR$vectors[,4]
 Ar = cbind(a1,a2,a3,a4)
 RK = Ar %*% t(Ar)
 
-summary(princomp(As), loadings = TRUE)
+summary(princomp(A), loadings = TRUE)
 
 ?princomp
 
@@ -48,9 +67,7 @@ A%*%t(A)
 t(A)%*%A
 solve(A)
 
-################################################################################
-# Inverse of a matrix
-################################################################################
+
 
 c=rbind(c(1, -1/4), c(-1/4, 1))  
 solve(c)
