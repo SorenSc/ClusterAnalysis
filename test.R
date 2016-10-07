@@ -66,8 +66,8 @@ A = matrix(seq(1,9), nrow = 3)
 A%*%t(A)
 t(A)%*%A
 solve(A)
-
-
+A**(-1)
+A
 
 c=rbind(c(1, -1/4), c(-1/4, 1))  
 solve(c)

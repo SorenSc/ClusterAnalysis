@@ -24,6 +24,9 @@ pca_headsize = princomp(headsize)
 
 summary(pca_headsize, loadings = T)
 
+(cov(headsize))
+(cor(headsize))
+
 plot(pca_headsize)
 plot(pca_headsize$sdev/sum(pca_headsize$sdev), 
      type = 'b',
@@ -169,6 +172,7 @@ plot(pca_prisoners)
 
 screeplot(pca_prisoners, type="lines")
 
+
 # Which components should be included?
 # Based on the eigenvectors the first two components should be included.
 # Based on the a desired explained variance of more than nintey percent,
@@ -269,3 +273,4 @@ par(mfrow=c(2,2))
 plot(prc_jet, col = km$cluster, main = 'K-means')
 plot(prc_jet, col = cutree(sl, k=2), main = 'Single linkage')
 plot(prc_jet, col = cutree(cl, k=2), main = 'Complete linkage')
+
